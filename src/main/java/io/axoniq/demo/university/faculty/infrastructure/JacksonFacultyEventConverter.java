@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Custom Converter implementation for university faculty events.
- * Handles serialization/deserialization of events in the io.axoniq.demo.university.faculty.events package.
  * Uses JSON serialization with Jackson for robust and maintainable format.
  *
  * @author GitHub Copilot
@@ -110,7 +109,6 @@ public final class JacksonFacultyEventConverter implements Converter {
         return objectMapper.readValue(jsonInput, targetType);
     }
 
-    // Custom serializers and deserializers for ID classes using modern sealed approach
     private static final class CourseIdSerializer extends JsonSerializer<CourseId> {
         @Override
         public void serialize(CourseId value, JsonGenerator gen, SerializerProvider serializers)

@@ -2,6 +2,7 @@ package io.axoniq.demo.university.faculty.write.createcourseplain;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
+import io.axoniq.demo.university.faculty.infrastructure.JacksonFacultyEventConverter;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.eventhandling.EventSink;
 import org.axonframework.eventsourcing.EventSourcedEntityFactory;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class CreateCoursePlainConfiguration {
 
     public static EventSourcingConfigurer configure(EventSourcingConfigurer configurer) {
+        var converter = new JacksonFacultyEventConverter();
         var stateEntity = EventSourcedEntityModule
                 .declarative(CourseId.class, CreateCourseCommandHandler.State.class)
                 .messagingModel((c, model) ->
@@ -26,7 +28,7 @@ public class CreateCoursePlainConfiguration {
                                 new SimpleEntityEvolvingComponent<>(
                                         Map.of(
                                                 new QualifiedName(CourseCreated.class),
-                                                (entity, event, context) -> entity.evolve((CourseCreated) event.getPayload())
+                                                (entity, event, context) -> entity.evolve(event.withConvertedPayload(p -> converter.convert(p, CourseCreated.class)).getPayload())
                                         )
                                 )
                         ).build()

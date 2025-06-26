@@ -11,7 +11,10 @@ import org.axonframework.eventstreaming.EventCriteria;
 import org.axonframework.eventstreaming.Tag;
 import org.axonframework.messaging.MessageTypeResolver;
 import org.axonframework.messaging.QualifiedName;
+import org.axonframework.modelling.SimpleEntityEvolvingComponent;
 import org.axonframework.modelling.configuration.StatefulCommandHandlingModule;
+
+import java.util.Map;
 
 public class CreateCoursePlainConfiguration {
 
@@ -20,11 +23,16 @@ public class CreateCoursePlainConfiguration {
                 .declarative(CourseId.class, CreateCourseCommandHandler.State.class)
                 .messagingModel((c, model) ->
                         model.entityEvolver(
-                                (state, event, context) -> state.evolve((CourseCreated) event.getPayload())
+                                new SimpleEntityEvolvingComponent<>(
+                                        Map.of(
+                                                new QualifiedName(CourseCreated.class),
+                                                (entity, event, context) -> entity.evolve((CourseCreated) event.getPayload())
+                                        )
+                                )
                         ).build()
                 )
                 .entityFactory(c -> EventSourcedEntityFactory.fromNoArgument(CreateCourseCommandHandler.State::initial))
-                .criteriaResolver(c -> (id,ctx) -> EventCriteria
+                .criteriaResolver(c -> (id, ctx) -> EventCriteria
                         .havingTags(Tag.of(FacultyTags.COURSE_ID, id.toString()))
                         .andBeingOneOfTypes(CourseCreated.class.getName())
                 ).build();

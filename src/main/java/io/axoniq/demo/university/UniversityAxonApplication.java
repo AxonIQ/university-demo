@@ -47,7 +47,7 @@ public class UniversityAxonApplication {
     public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
         if (configProps.axonServerEnabled) {
-            configurer.componentRegistry(r -> r.registerComponent(Converter.class, c -> new StringFacultyEventConverter()));
+            configurer.componentRegistry(r -> r.registerComponent(Converter.class, c -> new JacksonFacultyEventConverter()));
             configurer = configurer
                     .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
                             c.getComponent(AxonServerConnectionManager.class).getConnection("university"),

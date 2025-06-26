@@ -1,5 +1,8 @@
 package io.axoniq.demo.university.faculty;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
@@ -15,18 +18,19 @@ import java.util.Set;
 /**
  * Custom Converter implementation for university faculty events.
  * Handles serialization/deserialization of events in the io.axoniq.demo.university.faculty.events package.
- * Uses a simple custom string format for serialization.
+ * Uses JSON serialization with Jackson for robust and maintainable format.
  *
  * @author Cursor AI
  */
 public class UniversityEventConverter implements Converter {
 
     private static final Logger logger = LoggerFactory.getLogger(UniversityEventConverter.class);
-    private static final String DELIMITER = "|";
     
+    private final ObjectMapper objectMapper;
     private final Set<Class<?>> supportedEventTypes;
 
     public UniversityEventConverter() {
+        this.objectMapper = createObjectMapper();
         this.supportedEventTypes = Set.of(
             CourseCreated.class,
             CourseRenamed.class,
@@ -35,6 +39,20 @@ public class UniversityEventConverter implements Converter {
             StudentSubscribedToCourse.class,
             StudentUnsubscribedFromCourse.class
         );
+    }
+
+    private ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        
+        // Custom serializers for ID classes
+        module.addSerializer(CourseId.class, new CourseIdSerializer());
+        module.addSerializer(StudentId.class, new StudentIdSerializer());
+        module.addDeserializer(CourseId.class, new CourseIdDeserializer());
+        module.addDeserializer(StudentId.class, new StudentIdDeserializer());
+        
+        mapper.registerModule(module);
+        return mapper;
     }
 
     @Override
@@ -64,31 +82,31 @@ public class UniversityEventConverter implements Converter {
         try {
             // Serialize event to byte[] or String
             if (supportedEventTypes.contains(sourceType)) {
-                String serialized = serializeEvent(input);
+                String json = objectMapper.writeValueAsString(input);
                 
                 if (byte[].class.isAssignableFrom(targetType)) {
-                    return targetType.cast(serialized.getBytes(StandardCharsets.UTF_8));
+                    return targetType.cast(json.getBytes(StandardCharsets.UTF_8));
                 } else if (String.class.isAssignableFrom(targetType)) {
-                    return targetType.cast(serialized);
+                    return targetType.cast(json);
                 }
             }
             
             // Deserialize from byte[] or String to event
             if (supportedEventTypes.contains(targetType)) {
-                String serialized;
+                String json;
                 
                 if (byte[].class.isAssignableFrom(sourceType)) {
-                    serialized = new String((byte[]) input, StandardCharsets.UTF_8);
+                    json = new String((byte[]) input, StandardCharsets.UTF_8);
                 } else if (String.class.isAssignableFrom(sourceType)) {
-                    serialized = (String) input;
+                    json = (String) input;
                 } else {
                     throw new IllegalArgumentException("Unsupported source type: " + sourceType);
                 }
                 
-                return deserializeEvent(serialized, targetType);
+                return objectMapper.readValue(json, targetType);
             }
             
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             logger.error("Failed to convert between {} and {}", sourceType, targetType, e);
             throw new RuntimeException("Conversion failed", e);
         }
@@ -96,69 +114,36 @@ public class UniversityEventConverter implements Converter {
         throw new IllegalArgumentException("Cannot convert from " + sourceType + " to " + targetType);
     }
 
-    private String serializeEvent(Object event) {
-        String className = event.getClass().getSimpleName();
-        
-        return switch (event) {
-            case CourseCreated courseCreated -> 
-                String.format("%s%s%s%s%s%s%d", className, DELIMITER, 
-                    courseCreated.courseId().raw(), DELIMITER, courseCreated.name(), DELIMITER, courseCreated.capacity());
-                    
-            case CourseRenamed courseRenamed -> 
-                String.format("%s%s%s%s%s", className, DELIMITER, 
-                    courseRenamed.courseId().raw(), DELIMITER, courseRenamed.name());
-                    
-            case CourseCapacityChanged courseCapacityChanged -> 
-                String.format("%s%s%s%s%d", className, DELIMITER, 
-                    courseCapacityChanged.courseId().raw(), DELIMITER, courseCapacityChanged.capacity());
-                    
-            case StudentEnrolledInFaculty studentEnrolled -> 
-                String.format("%s%s%s%s%s%s%s", className, DELIMITER, 
-                    studentEnrolled.studentId().raw(), DELIMITER, studentEnrolled.firstName(), DELIMITER, studentEnrolled.lastName());
-                    
-            case StudentSubscribedToCourse studentSubscribed -> 
-                String.format("%s%s%s%s%s", className, DELIMITER, 
-                    studentSubscribed.studentId().raw(), DELIMITER, studentSubscribed.courseId().raw());
-                    
-            case StudentUnsubscribedFromCourse studentUnsubscribed -> 
-                String.format("%s%s%s%s%s", className, DELIMITER, 
-                    studentUnsubscribed.studentId().raw(), DELIMITER, studentUnsubscribed.courseId().raw());
-                    
-            default -> throw new IllegalArgumentException("Unsupported event type: " + event.getClass());
-        };
+    // Custom serializers and deserializers for ID classes
+    private static class CourseIdSerializer extends com.fasterxml.jackson.databind.JsonSerializer<CourseId> {
+        @Override
+        public void serialize(CourseId value, com.fasterxml.jackson.core.JsonGenerator gen, 
+                             com.fasterxml.jackson.databind.SerializerProvider serializers) throws java.io.IOException {
+            gen.writeString(value.raw());
+        }
     }
-
-    @SuppressWarnings("unchecked")
-    private <T> T deserializeEvent(String serialized, Class<T> targetType) {
-        String[] parts = serialized.split("\\" + DELIMITER);
-        String className = parts[0];
-        
-        return (T) switch (className) {
-            case "CourseCreated" -> {
-                if (parts.length != 4) throw new IllegalArgumentException("Invalid CourseCreated format");
-                yield new CourseCreated(CourseId.of(parts[1]), parts[2], Integer.parseInt(parts[3]));
-            }
-            case "CourseRenamed" -> {
-                if (parts.length != 3) throw new IllegalArgumentException("Invalid CourseRenamed format");
-                yield new CourseRenamed(CourseId.of(parts[1]), parts[2]);
-            }
-            case "CourseCapacityChanged" -> {
-                if (parts.length != 3) throw new IllegalArgumentException("Invalid CourseCapacityChanged format");
-                yield new CourseCapacityChanged(CourseId.of(parts[1]), Integer.parseInt(parts[2]));
-            }
-            case "StudentEnrolledInFaculty" -> {
-                if (parts.length != 4) throw new IllegalArgumentException("Invalid StudentEnrolledInFaculty format");
-                yield new StudentEnrolledInFaculty(StudentId.of(parts[1]), parts[2], parts[3]);
-            }
-            case "StudentSubscribedToCourse" -> {
-                if (parts.length != 3) throw new IllegalArgumentException("Invalid StudentSubscribedToCourse format");
-                yield new StudentSubscribedToCourse(StudentId.of(parts[1]), CourseId.of(parts[2]));
-            }
-            case "StudentUnsubscribedFromCourse" -> {
-                if (parts.length != 3) throw new IllegalArgumentException("Invalid StudentUnsubscribedFromCourse format");
-                yield new StudentUnsubscribedFromCourse(StudentId.of(parts[1]), CourseId.of(parts[2]));
-            }
-            default -> throw new IllegalArgumentException("Unknown event type: " + className);
-        };
+    
+    private static class StudentIdSerializer extends com.fasterxml.jackson.databind.JsonSerializer<StudentId> {
+        @Override
+        public void serialize(StudentId value, com.fasterxml.jackson.core.JsonGenerator gen, 
+                             com.fasterxml.jackson.databind.SerializerProvider serializers) throws java.io.IOException {
+            gen.writeString(value.raw());
+        }
+    }
+    
+    private static class CourseIdDeserializer extends com.fasterxml.jackson.databind.JsonDeserializer<CourseId> {
+        @Override
+        public CourseId deserialize(com.fasterxml.jackson.core.JsonParser p, 
+                                   com.fasterxml.jackson.databind.DeserializationContext ctxt) throws java.io.IOException {
+            return CourseId.of(p.getValueAsString());
+        }
+    }
+    
+    private static class StudentIdDeserializer extends com.fasterxml.jackson.databind.JsonDeserializer<StudentId> {
+        @Override
+        public StudentId deserialize(com.fasterxml.jackson.core.JsonParser p, 
+                                    com.fasterxml.jackson.databind.DeserializationContext ctxt) throws java.io.IOException {
+            return StudentId.of(p.getValueAsString());
+        }
     }
 } 

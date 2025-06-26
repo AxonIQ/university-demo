@@ -6,8 +6,28 @@ Axon version: 5.0.0-M1
 
 ## Event Store implementation
 
-Now only the in-memory implementation of the Event Store is supported, but this still allows you try out the new Command handling API. 
-The in-memory Event Store supports the [DCB (Dynamic Consistency Boundary) concept](https://www.youtube.com/watch?v=IgigmuHHchI).
+### InMemory
+
+The in-memory Event Store supports the [DCB (Dynamic Consistency Boundary) concept](https://www.youtube.com/watch?v=IgigmuHHchI), but it is not persistent, so it is not suitable for production use.
+It's good for testing and development purposes.
+
+### Axon Server (DCB support)
+
+To run the app with Axon Server, you need to have an instance of Axon Server running. You can run it using Docker:
+
+```bash
+docker compose up
+```
+
+Then you need to open the Axon Server UI at [http://localhost:8024](http://localhost:8024) and create a new context named `university`.
+What is essential, you need also check the `DCB context (beta)` checkbox in the `General` settings tab.
+![AxonServer_DCBContext_Creation.png](docs/images/AxonServer_DCBContext_Creation.png)
+
+If you did not create the context, the command execution will fail with the following error:
+```
+org.axonframework.commandhandling.CommandExecutionException: Exception while handling command
+Caused by: java.util.concurrent.ExecutionException: io.grpc.StatusRuntimeException: UNAVAILABLE
+```
 
 # Domain: The Axon University
 

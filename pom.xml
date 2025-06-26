@@ -39,6 +39,14 @@
             <version>${axon.version}</version>
         </dependency>
 
+        <!-- Event Store Dependencies -->
+
+        <dependency>
+            <groupId>org.axonframework</groupId>
+            <artifactId>axon-server-connector</artifactId>
+            <version>${axon.version}</version>
+        </dependency>
+
         <!-- Log4j Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

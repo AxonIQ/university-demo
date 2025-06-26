@@ -39,6 +39,9 @@ public class StringFacultyEventConverter implements Converter {
 
     @Override
     public boolean canConvert(@Nonnull Class<?> sourceType, @Nonnull Class<?> targetType) {
+        if (sourceType.equals(targetType)) {
+            return true;
+        }
         // Handle serialization: event -> byte[] or String
         if (supportedEventTypes.contains(sourceType) &&
                 (byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
@@ -59,6 +62,11 @@ public class StringFacultyEventConverter implements Converter {
     public <S, T> T convert(@Nullable S input, @Nonnull Class<S> sourceType, @Nonnull Class<T> targetType) {
         if (input == null) {
             return null;
+        }
+
+        if (sourceType.equals(targetType)) {
+            //noinspection unchecked
+            return (T) input;
         }
 
         try {
@@ -100,29 +108,23 @@ public class StringFacultyEventConverter implements Converter {
         String className = event.getClass().getSimpleName();
 
         return switch (event) {
-            case CourseCreated courseCreated ->
-                    String.format("%s%s%s%s%s%s%d", className, DELIMITER,
-                            courseCreated.courseId().raw(), DELIMITER, courseCreated.name(), DELIMITER, courseCreated.capacity());
+            case CourseCreated courseCreated -> String.format("%s%s%s%s%s%s%d", className, DELIMITER,
+                    courseCreated.courseId().raw(), DELIMITER, courseCreated.name(), DELIMITER, courseCreated.capacity());
 
-            case CourseRenamed courseRenamed ->
-                    String.format("%s%s%s%s%s", className, DELIMITER,
-                            courseRenamed.courseId().raw(), DELIMITER, courseRenamed.name());
+            case CourseRenamed courseRenamed -> String.format("%s%s%s%s%s", className, DELIMITER,
+                    courseRenamed.courseId().raw(), DELIMITER, courseRenamed.name());
 
-            case CourseCapacityChanged courseCapacityChanged ->
-                    String.format("%s%s%s%s%d", className, DELIMITER,
-                            courseCapacityChanged.courseId().raw(), DELIMITER, courseCapacityChanged.capacity());
+            case CourseCapacityChanged courseCapacityChanged -> String.format("%s%s%s%s%d", className, DELIMITER,
+                    courseCapacityChanged.courseId().raw(), DELIMITER, courseCapacityChanged.capacity());
 
-            case StudentEnrolledInFaculty studentEnrolled ->
-                    String.format("%s%s%s%s%s%s%s", className, DELIMITER,
-                            studentEnrolled.studentId().raw(), DELIMITER, studentEnrolled.firstName(), DELIMITER, studentEnrolled.lastName());
+            case StudentEnrolledInFaculty studentEnrolled -> String.format("%s%s%s%s%s%s%s", className, DELIMITER,
+                    studentEnrolled.studentId().raw(), DELIMITER, studentEnrolled.firstName(), DELIMITER, studentEnrolled.lastName());
 
-            case StudentSubscribedToCourse studentSubscribed ->
-                    String.format("%s%s%s%s%s", className, DELIMITER,
-                            studentSubscribed.studentId().raw(), DELIMITER, studentSubscribed.courseId().raw());
+            case StudentSubscribedToCourse studentSubscribed -> String.format("%s%s%s%s%s", className, DELIMITER,
+                    studentSubscribed.studentId().raw(), DELIMITER, studentSubscribed.courseId().raw());
 
-            case StudentUnsubscribedFromCourse studentUnsubscribed ->
-                    String.format("%s%s%s%s%s", className, DELIMITER,
-                            studentUnsubscribed.studentId().raw(), DELIMITER, studentUnsubscribed.courseId().raw());
+            case StudentUnsubscribedFromCourse studentUnsubscribed -> String.format("%s%s%s%s%s", className, DELIMITER,
+                    studentUnsubscribed.studentId().raw(), DELIMITER, studentUnsubscribed.courseId().raw());
 
             default -> throw new IllegalArgumentException("Unsupported event type: " + event.getClass());
         };
@@ -155,7 +157,8 @@ public class StringFacultyEventConverter implements Converter {
                 yield new StudentSubscribedToCourse(StudentId.of(parts[1]), CourseId.of(parts[2]));
             }
             case "StudentUnsubscribedFromCourse" -> {
-                if (parts.length != 3) throw new IllegalArgumentException("Invalid StudentUnsubscribedFromCourse format");
+                if (parts.length != 3)
+                    throw new IllegalArgumentException("Invalid StudentUnsubscribedFromCourse format");
                 yield new StudentUnsubscribedFromCourse(StudentId.of(parts[1]), CourseId.of(parts[2]));
             }
             default -> throw new IllegalArgumentException("Unknown event type: " + className);

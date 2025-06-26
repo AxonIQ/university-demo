@@ -1,6 +1,7 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
+import io.axoniq.demo.university.faculty.StringFacultyEventConverter;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
@@ -12,6 +13,7 @@ import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.ApplicationConfigurer;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.serialization.Converter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,14 +46,15 @@ public class UniversityAxonApplication {
 
     public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
-        configurer = FacultyModuleConfiguration.configure(configurer);
         if (configProps.axonServerEnabled) {
+            configurer.componentRegistry(r -> r.registerComponent(Converter.class, c -> new StringFacultyEventConverter()));
             configurer = configurer
                     .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
                             c.getComponent(AxonServerConnectionManager.class).getConnection("university"),
-                            new JacksonFacultyEventConverter()
+                            c.getComponent(Converter.class)
                     ));
         }
+        configurer = FacultyModuleConfiguration.configure(configurer);
         return configurer;
     }
 

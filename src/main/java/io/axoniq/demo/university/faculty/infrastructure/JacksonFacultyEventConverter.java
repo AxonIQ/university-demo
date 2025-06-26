@@ -57,6 +57,10 @@ public class JacksonFacultyEventConverter implements Converter {
 
     @Override
     public boolean canConvert(@Nonnull Class<?> sourceType, @Nonnull Class<?> targetType) {
+        if (sourceType.equals(targetType)) {
+            return true;
+        }
+
         // Handle serialization: event -> byte[] or String
         if (supportedEventTypes.contains(sourceType) && 
             (byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
@@ -77,6 +81,11 @@ public class JacksonFacultyEventConverter implements Converter {
     public <S, T> T convert(@Nullable S input, @Nonnull Class<S> sourceType, @Nonnull Class<T> targetType) {
         if (input == null) {
             return null;
+        }
+
+        if (sourceType.equals(targetType)) {
+            //noinspection unchecked
+            return (T) input;
         }
 
         try {

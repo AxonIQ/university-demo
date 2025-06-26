@@ -4,8 +4,8 @@ import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
+import io.axoniq.demo.university.faculty.UniversityEventConverter;
 import org.axonframework.axonserver.connector.AxonServerConnectionManager;
-import org.axonframework.axonserver.connector.TestConverter;
 import org.axonframework.axonserver.connector.event.AxonServerEventStorageEngine;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
@@ -49,7 +49,7 @@ public class UniversityAxonApplication {
             configurer = configurer
                     .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
                             c.getComponent(AxonServerConnectionManager.class).getConnection("university"),
-                            new TestConverter() // TODO: Replace with actual converter in 5.0.0-M3
+                            new UniversityEventConverter()
                     ));
         }
         return configurer;
@@ -70,7 +70,7 @@ public class UniversityAxonApplication {
     }
 
     static class ConfigurationProperties {
-        boolean axonServerEnabled = false;
+        boolean axonServerEnabled = true;
 
         public static ConfigurationProperties defaults() {
             return new ConfigurationProperties();

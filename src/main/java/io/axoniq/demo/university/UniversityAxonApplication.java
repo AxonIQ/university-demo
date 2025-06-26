@@ -28,7 +28,7 @@ public class UniversityAxonApplication {
     }
 
     private static AxonConfiguration startApplication(ConfigurationProperties configProps) {
-        var configurer = new UniversityAxonApplication().configurer(configProps.axonServerEnabled);
+        var configurer = new UniversityAxonApplication().configurer(configProps);
         return configurer.start();
     }
 
@@ -38,10 +38,14 @@ public class UniversityAxonApplication {
         logger.info("Application started with following configuration: \n" + componentDescriptor.describe());
     }
 
-    public ApplicationConfigurer configurer(boolean axonServerEnabled) {
+    public ApplicationConfigurer configurer() {
+        return configurer(ConfigurationProperties.defaults());
+    }
+
+    public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
         configurer = FacultyModuleConfiguration.configure(configurer);
-        if (axonServerEnabled) {
+        if (configProps.axonServerEnabled) {
             configurer = configurer
                     .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
                             c.getComponent(AxonServerConnectionManager.class).getConnection("university"),
@@ -66,7 +70,11 @@ public class UniversityAxonApplication {
     }
 
     static class ConfigurationProperties {
-        boolean axonServerEnabled = true;
+        boolean axonServerEnabled = false;
+
+        public static ConfigurationProperties defaults() {
+            return new ConfigurationProperties();
+        }
 
         public static ConfigurationProperties fromArgs(String[] args) {
             ConfigurationProperties props = new ConfigurationProperties();

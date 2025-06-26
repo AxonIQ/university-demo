@@ -3,7 +3,6 @@ package io.axoniq.demo.university.faculty.infrastructure;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import jakarta.annotation.Nonnull;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 
 /**
  * Custom Converter implementation for university faculty events.
@@ -27,18 +25,9 @@ public class JacksonFacultyEventConverter implements Converter {
     private static final Logger logger = LoggerFactory.getLogger(JacksonFacultyEventConverter.class);
     
     private final ObjectMapper objectMapper;
-    private final Set<Class<?>> supportedEventTypes;
 
     public JacksonFacultyEventConverter() {
         this.objectMapper = createObjectMapper();
-        this.supportedEventTypes = Set.of(
-            CourseCreated.class,
-            CourseRenamed.class,
-            CourseCapacityChanged.class,
-            StudentEnrolledInFaculty.class,
-            StudentSubscribedToCourse.class,
-            StudentUnsubscribedFromCourse.class
-        );
     }
 
     private ObjectMapper createObjectMapper() {
@@ -62,17 +51,15 @@ public class JacksonFacultyEventConverter implements Converter {
         }
 
         // Handle serialization: event -> byte[] or String
-        if (supportedEventTypes.contains(sourceType) && 
-            (byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
+        if ((byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
             return true;
         }
         
         // Handle deserialization: byte[] or String -> event
-        if ((byte[].class.isAssignableFrom(sourceType) || String.class.isAssignableFrom(sourceType)) &&
-            supportedEventTypes.contains(targetType)) {
+        if ((byte[].class.isAssignableFrom(sourceType) || String.class.isAssignableFrom(sourceType))) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -90,37 +77,29 @@ public class JacksonFacultyEventConverter implements Converter {
 
         try {
             // Serialize event to byte[] or String
-            if (supportedEventTypes.contains(sourceType)) {
-                String json = objectMapper.writeValueAsString(input);
-                
-                if (byte[].class.isAssignableFrom(targetType)) {
-                    return targetType.cast(json.getBytes(StandardCharsets.UTF_8));
-                } else if (String.class.isAssignableFrom(targetType)) {
-                    return targetType.cast(json);
-                }
+            String json = objectMapper.writeValueAsString(input);
+
+            if (byte[].class.isAssignableFrom(targetType)) {
+                return targetType.cast(json.getBytes(StandardCharsets.UTF_8));
+            } else if (String.class.isAssignableFrom(targetType)) {
+                return targetType.cast(json);
             }
             
             // Deserialize from byte[] or String to event
-            if (supportedEventTypes.contains(targetType)) {
-                String json;
-                
-                if (byte[].class.isAssignableFrom(sourceType)) {
-                    json = new String((byte[]) input, StandardCharsets.UTF_8);
-                } else if (String.class.isAssignableFrom(sourceType)) {
-                    json = (String) input;
-                } else {
-                    throw new IllegalArgumentException("Unsupported source type: " + sourceType);
-                }
-                
-                return objectMapper.readValue(json, targetType);
+            String jsonInput;
+            if (byte[].class.isAssignableFrom(sourceType)) {
+                jsonInput = new String((byte[]) input, StandardCharsets.UTF_8);
+            } else if (String.class.isAssignableFrom(sourceType)) {
+                jsonInput = (String) input;
+            } else {
+                throw new IllegalArgumentException("Unsupported source type: " + sourceType);
             }
-            
+            return objectMapper.readValue(jsonInput, targetType);
+
         } catch (JsonProcessingException e) {
             logger.error("Failed to convert between {} and {}", sourceType, targetType, e);
             throw new RuntimeException("Conversion failed", e);
         }
-        
-        throw new IllegalArgumentException("Cannot convert from " + sourceType + " to " + targetType);
     }
 
     // Custom serializers and deserializers for ID classes
@@ -155,4 +134,4 @@ public class JacksonFacultyEventConverter implements Converter {
             return StudentId.of(p.getValueAsString());
         }
     }
-} 
+}

@@ -24,17 +24,8 @@ public class StringFacultyEventConverter implements Converter {
     private static final Logger logger = LoggerFactory.getLogger(StringFacultyEventConverter.class);
     private static final String DELIMITER = "|";
 
-    private final Set<Class<?>> supportedEventTypes;
-
     public StringFacultyEventConverter() {
-        this.supportedEventTypes = Set.of(
-                CourseCreated.class,
-                CourseRenamed.class,
-                CourseCapacityChanged.class,
-                StudentEnrolledInFaculty.class,
-                StudentSubscribedToCourse.class,
-                StudentUnsubscribedFromCourse.class
-        );
+        // No supportedEventTypes filtering
     }
 
     @Override
@@ -43,14 +34,12 @@ public class StringFacultyEventConverter implements Converter {
             return true;
         }
         // Handle serialization: event -> byte[] or String
-        if (supportedEventTypes.contains(sourceType) &&
-                (byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
+        if ((byte[].class.isAssignableFrom(targetType) || String.class.isAssignableFrom(targetType))) {
             return true;
         }
 
         // Handle deserialization: byte[] or String -> event
-        if ((byte[].class.isAssignableFrom(sourceType) || String.class.isAssignableFrom(sourceType)) &&
-                supportedEventTypes.contains(targetType)) {
+        if ((byte[].class.isAssignableFrom(sourceType) || String.class.isAssignableFrom(sourceType))) {
             return true;
         }
 
@@ -71,37 +60,30 @@ public class StringFacultyEventConverter implements Converter {
 
         try {
             // Serialize event to byte[] or String
-            if (supportedEventTypes.contains(sourceType)) {
-                String serialized = serializeEvent(input);
+            String serialized = serializeEvent(input);
 
-                if (byte[].class.isAssignableFrom(targetType)) {
-                    return targetType.cast(serialized.getBytes(StandardCharsets.UTF_8));
-                } else if (String.class.isAssignableFrom(targetType)) {
-                    return targetType.cast(serialized);
-                }
+            if (byte[].class.isAssignableFrom(targetType)) {
+                return targetType.cast(serialized.getBytes(StandardCharsets.UTF_8));
+            } else if (String.class.isAssignableFrom(targetType)) {
+                return targetType.cast(serialized);
             }
 
             // Deserialize from byte[] or String to event
-            if (supportedEventTypes.contains(targetType)) {
-                String serialized;
-
-                if (byte[].class.isAssignableFrom(sourceType)) {
-                    serialized = new String((byte[]) input, StandardCharsets.UTF_8);
-                } else if (String.class.isAssignableFrom(sourceType)) {
-                    serialized = (String) input;
-                } else {
-                    throw new IllegalArgumentException("Unsupported source type: " + sourceType);
-                }
-
-                return deserializeEvent(serialized, targetType);
+            String serializedInput;
+            if (byte[].class.isAssignableFrom(sourceType)) {
+                serializedInput = new String((byte[]) input, StandardCharsets.UTF_8);
+            } else if (String.class.isAssignableFrom(sourceType)) {
+                serializedInput = (String) input;
+            } else {
+                throw new IllegalArgumentException("Unsupported source type: " + sourceType);
             }
+
+            return deserializeEvent(serializedInput, targetType);
 
         } catch (Exception e) {
             logger.error("Failed to convert between {} and {}", sourceType, targetType, e);
             throw new RuntimeException("Conversion failed", e);
         }
-
-        throw new IllegalArgumentException("Cannot convert from " + sourceType + " to " + targetType);
     }
 
     private String serializeEvent(Object event) {

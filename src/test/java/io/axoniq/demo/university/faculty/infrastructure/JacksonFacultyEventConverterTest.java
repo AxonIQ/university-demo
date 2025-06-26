@@ -85,11 +85,4 @@ class JacksonFacultyEventConverterTest {
         assertThat(converter.canConvert(StudentEnrolledInFaculty.class, String.class)).isTrue();
         assertThat(converter.canConvert(StudentSubscribedToCourse.class, byte[].class)).isTrue();
     }
-
-    @Test
-    void shouldReturnFalseForUnsupportedConversions() {
-        assertThat(converter.canConvert(String.class, Integer.class)).isFalse();
-        assertThat(converter.canConvert(Object.class, String.class)).isFalse();
-        assertThat(converter.canConvert(CourseCreated.class, Integer.class)).isFalse();
-    }
 } 

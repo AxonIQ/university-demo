@@ -1,4 +1,4 @@
-package io.axoniq.demo.university.faculty;
+package io.axoniq.demo.university.faculty.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,14 +22,14 @@ import java.util.Set;
  *
  * @author Cursor AI
  */
-public class UniversityEventConverter implements Converter {
+public class JacksonFacultyEventConverter implements Converter {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniversityEventConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JacksonFacultyEventConverter.class);
     
     private final ObjectMapper objectMapper;
     private final Set<Class<?>> supportedEventTypes;
 
-    public UniversityEventConverter() {
+    public JacksonFacultyEventConverter() {
         this.objectMapper = createObjectMapper();
         this.supportedEventTypes = Set.of(
             CourseCreated.class,

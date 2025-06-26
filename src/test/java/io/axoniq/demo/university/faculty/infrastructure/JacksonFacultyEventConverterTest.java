@@ -1,4 +1,4 @@
-package io.axoniq.demo.university.faculty;
+package io.axoniq.demo.university.faculty.infrastructure;
 
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UniversityEventConverterTest {
+class JacksonFacultyEventConverterTest {
 
-    private UniversityEventConverter converter;
+    private JacksonFacultyEventConverter converter;
 
     @BeforeEach
     void setUp() {
-        converter = new UniversityEventConverter();
+        converter = new JacksonFacultyEventConverter();
     }
 
     @Test

@@ -1,53 +1,65 @@
+/*
+ * Copyright (c) 2023-2025. AxonIQ University Demo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.axoniq.demo.university.faculty.infrastructure;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.axoniq.demo.university.shared.ids.CourseId;
-import io.axoniq.demo.university.shared.ids.StudentId;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.axonframework.serialization.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Custom Converter implementation for university faculty events.
- * Uses JSON serialization with Jackson for robust and maintainable format.
+ * Converter implementation using Jackson for object serialization and deserialization.
+ * <p>
+ * This converter provides robust and maintainable format handling for event payloads and other objects,
+ * using Jackson for transformation between object and wire formats (such as JSON in String or byte[] form).
+ * <p>
+ * Intended for use with Axon Framework event storage and messaging, ensuring consistent payload
+ * transformation between object and wire formats. Users may provide a custom-configured {@link ObjectMapper}
+ * or use the default.
  *
- * @author GitHub Copilot
+ * @author Mateusz Nowak
+ * @since 5.0.0
  */
-public final class JacksonFacultyEventConverter implements Converter {
+public final class JacksonConverter implements Converter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JacksonFacultyEventConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JacksonConverter.class);
     
     private final ObjectMapper objectMapper;
 
-    public JacksonFacultyEventConverter() {
-        this.objectMapper = createObjectMapper();
+    /**
+     * Constructs a JacksonFacultyEventConverter with a default ObjectMapper.
+     * The default mapper does not register any custom serializers or deserializers.
+     */
+    public JacksonConverter() {
+        this(new ObjectMapper());
     }
 
-    private static ObjectMapper createObjectMapper() {
-        var mapper = new ObjectMapper();
-        var module = new SimpleModule();
-
-        // Custom serializers for ID classes
-        module.addSerializer(CourseId.class, new CourseIdSerializer());
-        module.addSerializer(StudentId.class, new StudentIdSerializer());
-        module.addDeserializer(CourseId.class, new CourseIdDeserializer());
-        module.addDeserializer(StudentId.class, new StudentIdDeserializer());
-        
-        mapper.registerModule(module);
-        return mapper;
+    /**
+     * Constructs a JacksonFacultyEventConverter with a user-provided ObjectMapper.
+     *
+     * @param objectMapper The ObjectMapper to use for serialization/deserialization.
+     */
+    public JacksonConverter(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -107,38 +119,6 @@ public final class JacksonFacultyEventConverter implements Converter {
         };
 
         return objectMapper.readValue(jsonInput, targetType);
-    }
-
-    private static final class CourseIdSerializer extends JsonSerializer<CourseId> {
-        @Override
-        public void serialize(CourseId value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException {
-            gen.writeString(value.raw());
-        }
-    }
-    
-    private static final class StudentIdSerializer extends JsonSerializer<StudentId> {
-        @Override
-        public void serialize(StudentId value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException {
-            gen.writeString(value.raw());
-        }
-    }
-    
-    private static final class CourseIdDeserializer extends JsonDeserializer<CourseId> {
-        @Override
-        public CourseId deserialize(JsonParser parser, DeserializationContext context)
-                throws IOException {
-            return CourseId.of(parser.getValueAsString());
-        }
-    }
-    
-    private static final class StudentIdDeserializer extends JsonDeserializer<StudentId> {
-        @Override
-        public StudentId deserialize(JsonParser parser, DeserializationContext context)
-                throws IOException {
-            return StudentId.of(parser.getValueAsString());
-        }
     }
 
     /**

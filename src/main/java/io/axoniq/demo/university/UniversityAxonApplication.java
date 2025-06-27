@@ -11,6 +11,7 @@ import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.ApplicationConfigurer;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageEngine;
 import org.axonframework.serialization.Converter;
 
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ public class UniversityAxonApplication {
     private static final Logger logger = Logger.getLogger(UniversityAxonApplication.class.getName());
 
     public static void main(String[] args) {
-        ConfigurationProperties configProps = ConfigurationProperties.fromArgs(args);
+        ConfigurationProperties configProps = ConfigurationProperties.load();
         var configuration = startApplication(configProps);
         printApplicationConfiguration(configuration);
         executeSampleCommands(configuration);
@@ -40,7 +41,7 @@ public class UniversityAxonApplication {
     }
 
     public ApplicationConfigurer configurer() {
-        return configurer(ConfigurationProperties.defaults());
+        return configurer(ConfigurationProperties.load());
     }
 
     public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
@@ -51,6 +52,8 @@ public class UniversityAxonApplication {
                             c.getComponent(AxonServerConnectionManager.class).getConnection(CONTEXT),
                             c.getComponent(Converter.class)
                     ));
+        } else {
+            configurer = configurer.registerEventStorageEngine(c -> new InMemoryEventStorageEngine());
         }
         configurer = FacultyModuleConfiguration.configure(configurer);
         return configurer;
@@ -71,22 +74,4 @@ public class UniversityAxonApplication {
         }
     }
 
-    public static class ConfigurationProperties {
-        boolean axonServerEnabled = false;
-
-        public static ConfigurationProperties defaults() {
-            return new ConfigurationProperties();
-        }
-
-        public static ConfigurationProperties fromArgs(String[] args) {
-            ConfigurationProperties props = new ConfigurationProperties();
-            for (String arg : args) {
-                if (arg.startsWith("axon.server.enabled=")) {
-                    String value = arg.substring("axon.server.enabled=".length());
-                    props.axonServerEnabled = Boolean.parseBoolean(value);
-                }
-            }
-            return props;
-        }
-    }
 }

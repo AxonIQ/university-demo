@@ -67,6 +67,14 @@ class JacksonConverterTest {
     }
 
     @Test
+    void shouldReturnFalseForUnsupportedConversions() {
+        assertThat(converter.canConvert(TestEvent.class, Integer.class)).isFalse();
+        assertThat(converter.canConvert(AnotherEvent.class, Double.class)).isFalse();
+        assertThat(converter.canConvert(Integer.class, TestEvent.class)).isFalse();
+        assertThat(converter.canConvert(Double.class, AnotherEvent.class)).isFalse();
+    }
+
+    @Test
     void shouldReturnSameInstanceIfSourceAndTargetTypeAreEqual() {
         TestEvent testEvent = new TestEvent("ID789", "SameType", 123);
         TestEvent result = converter.convert(testEvent, TestEvent.class, TestEvent.class);

@@ -115,6 +115,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <argLine>-Daxon.axonserver.suppressDownloadMessage=true</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

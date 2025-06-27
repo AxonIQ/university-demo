@@ -97,7 +97,7 @@ class SubscribeStudentToCourseCommandHandler {
 
         @EventSourcingHandler
         void evolve(CourseCreated event) {
-            this.courseId =event.courseId();
+            this.courseId = event.courseId();
             this.courseCapacity = event.capacity();
         }
 

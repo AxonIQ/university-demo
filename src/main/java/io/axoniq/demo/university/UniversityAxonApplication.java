@@ -4,7 +4,6 @@ import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
-import io.axoniq.demo.university.faculty.infrastructure.JacksonConverter;
 import org.axonframework.axonserver.connector.AxonServerConnectionManager;
 import org.axonframework.axonserver.connector.event.AxonServerEventStorageEngine;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 
 public class UniversityAxonApplication {
 
+    private static final String CONTEXT = "university";
     private static final Logger logger = Logger.getLogger(UniversityAxonApplication.class.getName());
 
     public static void main(String[] args) {
@@ -46,10 +46,9 @@ public class UniversityAxonApplication {
     public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
         if (configProps.axonServerEnabled) {
-            configurer.componentRegistry(r -> r.registerComponent(Converter.class, c -> new JacksonConverter()));
             configurer = configurer
                     .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
-                            c.getComponent(AxonServerConnectionManager.class).getConnection("university"),
+                            c.getComponent(AxonServerConnectionManager.class).getConnection(CONTEXT),
                             c.getComponent(Converter.class)
                     ));
         }
@@ -66,6 +65,7 @@ public class UniversityAxonApplication {
             var commandGateway = configuration.getComponent(CommandGateway.class);
             commandGateway.sendAndWait(createCourse);
             commandGateway.sendAndWait(renameCourse);
+            logger.info("Successfully executed sample commands");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error while executing sample commands: " + e.getMessage(), e);
         }

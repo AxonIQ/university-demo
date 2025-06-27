@@ -2,7 +2,6 @@ package io.axoniq.demo.university.faculty.write.createcourseplain;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
-import io.axoniq.demo.university.faculty.infrastructure.JacksonConverter;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.eventhandling.EventSink;
 import org.axonframework.eventsourcing.EventSourcedEntityFactory;
@@ -12,25 +11,22 @@ import org.axonframework.eventstreaming.EventCriteria;
 import org.axonframework.eventstreaming.Tag;
 import org.axonframework.messaging.MessageTypeResolver;
 import org.axonframework.messaging.QualifiedName;
-import org.axonframework.modelling.SimpleEntityEvolvingComponent;
 import org.axonframework.modelling.configuration.StatefulCommandHandlingModule;
-
-import java.util.Map;
+import org.axonframework.serialization.Converter;
 
 public class CreateCoursePlainConfiguration {
 
     public static EventSourcingConfigurer configure(EventSourcingConfigurer configurer) {
-        var converter = new JacksonConverter();
         var stateEntity = EventSourcedEntityModule
                 .declarative(CourseId.class, CreateCourseCommandHandler.State.class)
                 .messagingModel((c, model) ->
                         model.entityEvolver(
-                                new SimpleEntityEvolvingComponent<>(
-                                        Map.of(
-                                                new QualifiedName(CourseCreated.class),
-                                                (entity, event, context) -> entity.evolve(event.withConvertedPayload(p -> converter.convert(p, CourseCreated.class)).getPayload())
+                                (entity, event, context) ->
+                                        entity.evolve(
+                                                event.withConvertedPayload(
+                                                        p -> c.getComponent(Converter.class).convert(p, CourseCreated.class)
+                                                ).getPayload()
                                         )
-                                )
                         ).build()
                 )
                 .entityFactory(c -> EventSourcedEntityFactory.fromNoArgument(CreateCourseCommandHandler.State::initial))

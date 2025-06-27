@@ -72,7 +72,7 @@ public class UniversityAxonApplication {
     }
 
     public static class ConfigurationProperties {
-        boolean axonServerEnabled = true;
+        boolean axonServerEnabled = false;
 
         public static ConfigurationProperties defaults() {
             return new ConfigurationProperties();

@@ -13,11 +13,15 @@ It's good for testing and development purposes.
 
 ### Axon Server (DCB support)
 
+#### Docker container
+
 To run the app with Axon Server, you need to have an instance of Axon Server running. You can run it using Docker:
 
 ```bash
 docker compose up
 ```
+
+#### Axon Server Context
 
 Then you need to open the Axon Server UI at [http://localhost:8024](http://localhost:8024) and create a new context named `university`.
 What is essential, you need also check the `DCB context (beta)` checkbox in the `General` settings tab.
@@ -28,6 +32,10 @@ If you did not create the context, the command execution will fail with the foll
 org.axonframework.commandhandling.CommandExecutionException: Exception while handling command
 Caused by: java.util.concurrent.ExecutionException: io.grpc.StatusRuntimeException: UNAVAILABLE
 ```
+
+#### The app configuration
+
+// TODO!!!
 
 # Domain: The Axon University
 

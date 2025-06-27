@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class ConfigurationProperties {
     private static final Logger logger = Logger.getLogger(ConfigurationProperties.class.getName());
 
-    boolean axonServerEnabled = false;
+    boolean axonServerEnabled = true;
 
     public static ConfigurationProperties defaults() {
         return new ConfigurationProperties();

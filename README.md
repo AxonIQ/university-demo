@@ -35,7 +35,8 @@ Caused by: java.util.concurrent.ExecutionException: io.grpc.StatusRuntimeExcepti
 
 #### The app configuration
 
-// TODO!!!
+The application is configured to use Axon Server as the Event Store by default. 
+If you want to use the in-memory Event Store, you can change the configuration in the `application.properties`.
 
 # Domain: The Axon University
 

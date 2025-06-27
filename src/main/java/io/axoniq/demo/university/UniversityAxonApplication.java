@@ -4,15 +4,13 @@ import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
-import org.axonframework.axonserver.connector.AxonServerConnectionManager;
-import org.axonframework.axonserver.connector.event.AxonServerEventStorageEngine;
+import org.axonframework.axonserver.connector.AxonServerConfiguration;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.ApplicationConfigurer;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 import org.axonframework.eventsourcing.eventstore.inmemory.InMemoryEventStorageEngine;
-import org.axonframework.serialization.Converter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,11 +45,11 @@ public class UniversityAxonApplication {
     public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
         if (configProps.axonServerEnabled) {
-            configurer = configurer
-                    .registerEventStorageEngine(c -> new AxonServerEventStorageEngine(
-                            c.getComponent(AxonServerConnectionManager.class).getConnection(CONTEXT),
-                            c.getComponent(Converter.class)
-                    ));
+            configurer.componentRegistry(r -> r.registerComponent(AxonServerConfiguration.class, c -> {
+                var axonServerConfig = new AxonServerConfiguration();
+                axonServerConfig.setContext(CONTEXT);
+                return axonServerConfig;
+            }));
         } else {
             configurer = configurer.registerEventStorageEngine(c -> new InMemoryEventStorageEngine());
         }

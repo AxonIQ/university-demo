@@ -93,7 +93,6 @@ class SubscribeStudentToCourseCommandHandler {
 
         @EntityCreator
         public State() {
-
         }
 
         @EventSourcingHandler

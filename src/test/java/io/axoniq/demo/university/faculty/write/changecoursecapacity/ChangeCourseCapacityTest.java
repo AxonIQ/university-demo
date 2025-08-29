@@ -1,6 +1,5 @@
 package io.axoniq.demo.university.faculty.write.changecoursecapacity;
 
-import io.axoniq.demo.university.UniversityAxonApplication;
 import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCapacityChanged;
 import io.axoniq.demo.university.faculty.events.CourseCreated;

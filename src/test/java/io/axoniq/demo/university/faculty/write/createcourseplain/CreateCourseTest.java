@@ -1,6 +1,5 @@
 package io.axoniq.demo.university.faculty.write.createcourseplain;
 
-import io.axoniq.demo.university.UniversityAxonApplication;
 import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.shared.ids.CourseId;

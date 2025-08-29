@@ -1,6 +1,5 @@
 package io.axoniq.demo.university.faculty.write.subscribestudent;
 
-import io.axoniq.demo.university.UniversityAxonApplication;
 import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;

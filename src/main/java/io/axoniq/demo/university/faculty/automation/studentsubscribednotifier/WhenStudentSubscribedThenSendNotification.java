@@ -1,7 +1,7 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
-import org.axonframework.eventhandling.annotations.EventHandler;
+import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.messaging.MessageStream;
 
 /**

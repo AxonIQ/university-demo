@@ -1,7 +1,7 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
 import org.axonframework.eventhandling.configuration.EventProcessorModule;
-import org.axonframework.eventhandling.processors.streaming.pooled.PooledStreamingEventProcessorModule;
+import org.axonframework.eventhandling.pooled.PooledStreamingEventProcessorModule;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 
 public class StudentSubscribedNotifierConfiguration {

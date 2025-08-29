@@ -5,7 +5,7 @@ import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
 import org.axonframework.axonserver.connector.AxonServerConfiguration;
-import org.axonframework.axonserver.connector.ServerConnectorConfigurationEnhancer;
+import org.axonframework.axonserver.connector.AxonServerConfigurationEnhancer;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.ApplicationConfigurer;
@@ -52,7 +52,7 @@ public class UniversityAxonApplication {
                 return axonServerConfig;
             }));
         } else {
-            configurer.componentRegistry(r -> r.disableEnhancer(ServerConnectorConfigurationEnhancer.class));
+            configurer.componentRegistry(r -> r.disableEnhancer(AxonServerConfigurationEnhancer.class));
         }
         configurer = FacultyModuleConfiguration.configure(configurer);
         return configurer;

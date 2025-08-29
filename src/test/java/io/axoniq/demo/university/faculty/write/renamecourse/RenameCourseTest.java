@@ -1,6 +1,7 @@
 package io.axoniq.demo.university.faculty.write.renamecourse;
 
 import io.axoniq.demo.university.UniversityAxonApplication;
+import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
@@ -13,8 +14,7 @@ class RenameCourseTest {
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        fixture = AxonTestFixture.with(application.configurer());
+        fixture = FacultyTestFixture.create();
     }
 
     @Test

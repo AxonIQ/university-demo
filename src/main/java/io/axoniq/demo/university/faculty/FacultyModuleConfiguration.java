@@ -1,5 +1,6 @@
 package io.axoniq.demo.university.faculty;
 
+import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.StudentSubscribedNotifierConfiguration;
 import io.axoniq.demo.university.faculty.write.changecoursecapacity.ChangeCourseCapacityConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourse.CreateCourseConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCoursePlainConfiguration;
@@ -12,6 +13,7 @@ import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 public class FacultyModuleConfiguration {
 
     public static EventSourcingConfigurer configure(EventSourcingConfigurer configurer) {
+        // Write side
         configurer = CreateCourseConfiguration.configure(configurer);
         configurer = CreateCoursePlainConfiguration.configure(configurer);
         configurer = RenameCourseConfiguration.configure(configurer);
@@ -19,6 +21,13 @@ public class FacultyModuleConfiguration {
         configurer = SubscribeStudentConfiguration.configure(configurer);
         configurer = SubscribeStudentMultiEntityConfiguration.configure(configurer);
         configurer = UnsubscribeStudentConfiguration.configure(configurer);
+
+        // Read side
+        // TBD
+
+        // Automations
+        configurer = StudentSubscribedNotifierConfiguration.configure(configurer);
+
         return configurer;
     }
 

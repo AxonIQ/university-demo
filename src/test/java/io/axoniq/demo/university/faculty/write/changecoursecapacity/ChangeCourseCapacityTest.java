@@ -1,6 +1,7 @@
 package io.axoniq.demo.university.faculty.write.changecoursecapacity;
 
 import io.axoniq.demo.university.UniversityAxonApplication;
+import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCapacityChanged;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
@@ -15,8 +16,7 @@ class ChangeCourseCapacityTest {
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        fixture = AxonTestFixture.with(application.configurer());
+        fixture = FacultyTestFixture.create();
     }
 
     @Test

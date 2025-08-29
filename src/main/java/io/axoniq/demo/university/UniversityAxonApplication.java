@@ -39,11 +39,11 @@ public class UniversityAxonApplication {
         logger.info("Application started with following configuration: \n" + componentDescriptor.describe());
     }
 
-    public ApplicationConfigurer configurer() {
+    public EventSourcingConfigurer configurer() {
         return configurer(ConfigurationProperties.load());
     }
 
-    public ApplicationConfigurer configurer(ConfigurationProperties configProps) {
+    public EventSourcingConfigurer configurer(ConfigurationProperties configProps) {
         var configurer = EventSourcingConfigurer.create();
         if (configProps.axonServerEnabled) {
             configurer.componentRegistry(r -> r.registerComponent(AxonServerConfiguration.class, c -> {

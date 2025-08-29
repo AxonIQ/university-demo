@@ -1,6 +1,7 @@
 package io.axoniq.demo.university.faculty.write.subscribestudent;
 
 import io.axoniq.demo.university.UniversityAxonApplication;
+import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
@@ -17,8 +18,7 @@ class SubscribeStudentToCourseTest {
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        fixture = AxonTestFixture.with(application.configurer());
+        fixture = FacultyTestFixture.create();
     }
 
     @Test

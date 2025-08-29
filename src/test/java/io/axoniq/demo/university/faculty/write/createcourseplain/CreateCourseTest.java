@@ -1,6 +1,7 @@
 package io.axoniq.demo.university.faculty.write.createcourseplain;
 
 import io.axoniq.demo.university.UniversityAxonApplication;
+import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.test.fixture.AxonTestFixture;
@@ -12,8 +13,7 @@ class CreateCourseTest {
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        fixture = AxonTestFixture.with(application.configurer());
+        fixture = FacultyTestFixture.create();
     }
 
     @Test

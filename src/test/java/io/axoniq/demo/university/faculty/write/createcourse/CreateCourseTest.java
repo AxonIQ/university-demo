@@ -1,9 +1,16 @@
 package io.axoniq.demo.university.faculty.write.createcourse;
 
 import io.axoniq.demo.university.UniversityAxonApplication;
+import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.shared.ids.CourseId;
+import org.axonframework.common.ReflectionUtils;
+import org.axonframework.configuration.ApplicationConfigurer;
+import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.eventsourcing.eventstore.EventStore;
+import org.axonframework.eventstreaming.StreamableEventSource;
 import org.axonframework.test.fixture.AxonTestFixture;
+import org.axonframework.test.fixture.RecordingEventStore;
 import org.junit.jupiter.api.*;
 
 class CreateCourseTest {
@@ -12,8 +19,7 @@ class CreateCourseTest {
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        fixture = AxonTestFixture.with(application.configurer());
+        fixture = FacultyTestFixture.create();
     }
 
     @Test
@@ -23,11 +29,11 @@ class CreateCourseTest {
         var capacity = 3;
 
         fixture.given()
-               .when()
-               .command(new CreateCourse(courseId, courseName, capacity))
-               .then()
-               .success()
-               .events(new CourseCreated(courseId, courseName, capacity));
+                .when()
+                .command(new CreateCourse(courseId, courseName, capacity))
+                .then()
+                .success()
+                .events(new CourseCreated(courseId, courseName, capacity));
     }
 
     @Test
@@ -37,11 +43,11 @@ class CreateCourseTest {
         var capacity = 3;
 
         fixture.given()
-               .event(new CourseCreated(courseId, courseName, capacity))
-               .when()
-               .command(new CreateCourse(courseId, courseName, capacity))
-               .then()
-               .success()
-               .noEvents();
+                .event(new CourseCreated(courseId, courseName, capacity))
+                .when()
+                .command(new CreateCourse(courseId, courseName, capacity))
+                .then()
+                .success()
+                .noEvents();
     }
 }

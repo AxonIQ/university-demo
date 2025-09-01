@@ -5,7 +5,6 @@ import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.in
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
-import org.awaitility.Awaitility;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventhandling.gateway.EventGateway;
 import org.junit.jupiter.api.AfterEach;
@@ -14,14 +13,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.awaitility.Awaitility.*;
+
 public class WhenStudentSubscribedThenSendNotificationTest {
 
     private AxonConfiguration sut;
 
     @BeforeEach
     void beforeEach() {
-        var application = new UniversityAxonApplication();
-        sut = application.configurer().start();
+        sut = UniversityAxonApplication.startApplication();
     }
 
     @AfterEach
@@ -29,6 +30,7 @@ public class WhenStudentSubscribedThenSendNotificationTest {
         sut.shutdown();
     }
 
+    // TODO: why does it take 18 seconds with InMemory, but 2 with AxonServer !!!???
     @Test
     void test() {
         // given
@@ -42,9 +44,8 @@ public class WhenStudentSubscribedThenSendNotificationTest {
 
         // then
         var expectedNotification = new NotificationService.Notification(studentId.raw(), "You have subscribed to course " + courseId);
-        Awaitility.await()
-                .atMost(2, TimeUnit.SECONDS)
-                .until(() -> notificationService.sent().contains(expectedNotification));
+        await().atMost(2, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(notificationService.sent()).contains(expectedNotification));
     }
 
 

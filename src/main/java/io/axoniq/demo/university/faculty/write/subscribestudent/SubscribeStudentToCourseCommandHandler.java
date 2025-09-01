@@ -1,11 +1,7 @@
 package io.axoniq.demo.university.faculty.write.subscribestudent;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
-import io.axoniq.demo.university.faculty.events.CourseCapacityChanged;
-import io.axoniq.demo.university.faculty.events.CourseCreated;
-import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
-import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
-import io.axoniq.demo.university.faculty.events.StudentUnsubscribedFromCourse;
+import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.commandhandling.annotation.CommandHandler;
@@ -18,6 +14,7 @@ import org.axonframework.eventstreaming.EventCriteria;
 import org.axonframework.eventstreaming.Tag;
 import org.axonframework.modelling.annotation.InjectEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SubscribeStudentToCourseCommandHandler {
@@ -34,14 +31,20 @@ class SubscribeStudentToCourseCommandHandler {
         eventAppender.append(events);
     }
 
-    private List<StudentSubscribedToCourse> decide(SubscribeStudentToCourse command, State state) {
+    private List<?> decide(SubscribeStudentToCourse command, State state) {
         assertStudentEnrolledFaculty(state);
         assertStudentNotSubscribedToTooManyCourses(state);
         assertCourseExists(state);
         assertEnoughVacantSpotsInCourse(state);
         assertStudentNotAlreadySubscribed(state);
 
-        return List.of(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
+        var result = new ArrayList<>();
+        result.add(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
+        var lastSpotTaken = state.noOfStudentsSubscribedToCourse + 1 == state.courseCapacity;
+        if (lastSpotTaken) {
+            result.add(new CourseFullyBooked(command.courseId()));
+        }
+        return result;
     }
 
     private void assertStudentEnrolledFaculty(State state) {

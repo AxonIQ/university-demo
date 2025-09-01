@@ -8,7 +8,6 @@ import org.axonframework.axonserver.connector.AxonServerConfiguration;
 import org.axonframework.axonserver.connector.AxonServerConfigurationEnhancer;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
-import org.axonframework.configuration.ApplicationConfigurer;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 
@@ -23,14 +22,19 @@ public class UniversityAxonApplication {
     public static void main(String[] args) {
         ConfigurationProperties configProps = ConfigurationProperties.load();
         var configuration = startApplication(configProps);
-        printApplicationConfiguration(configuration);
         executeSampleCommands(configuration);
         configuration.shutdown();
     }
 
-    private static AxonConfiguration startApplication(ConfigurationProperties configProps) {
+    public static AxonConfiguration startApplication() {
+        return startApplication(ConfigurationProperties.load());
+    }
+
+    public static AxonConfiguration startApplication(ConfigurationProperties configProps) {
         var configurer = new UniversityAxonApplication().configurer(configProps);
-        return configurer.start();
+        var configuration = configurer.start();
+        printApplicationConfiguration(configuration);
+        return configuration;
     }
 
     private static void printApplicationConfiguration(AxonConfiguration configuration) {

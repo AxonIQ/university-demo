@@ -27,3 +27,5 @@ public class WhenStudentSubscribedThenSendNotification {
     }
 
 }
+
+// todo: automation - when all courses

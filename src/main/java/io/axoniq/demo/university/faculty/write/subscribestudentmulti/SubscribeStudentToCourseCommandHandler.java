@@ -1,11 +1,13 @@
 package io.axoniq.demo.university.faculty.write.subscribestudentmulti;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
+import io.axoniq.demo.university.faculty.events.CourseFullyBooked;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
 import org.axonframework.modelling.annotation.InjectEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SubscribeStudentToCourseCommandHandler {
@@ -23,14 +25,20 @@ class SubscribeStudentToCourseCommandHandler {
         eventAppender.append(events);
     }
 
-    private List<StudentSubscribedToCourse> decide(SubscribeStudentToCourse command, Course course, Student student) {
+    private List<?> decide(SubscribeStudentToCourse command, Course course, Student student) {
         assertStudentEnrolledFaculty(student);
         assertStudentNotSubscribedToTooManyCourses(student);
         assertCourseExists(course);
         assertEnoughVacantSpotsInCourse(course);
         assertStudentNotAlreadySubscribed(course, student);
 
-        return List.of(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
+        var result = new ArrayList<>();
+        result.add(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
+        var lastSpotTaken = course.studentsSubscribed().size() + 1 == course.capacity();
+        if (lastSpotTaken) {
+            result.add(new CourseFullyBooked(command.courseId()));
+        }
+        return result;
     }
 
     private void assertStudentEnrolledFaculty(Student student) {

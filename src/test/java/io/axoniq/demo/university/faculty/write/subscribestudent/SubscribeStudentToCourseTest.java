@@ -2,6 +2,7 @@ package io.axoniq.demo.university.faculty.write.subscribestudent;
 
 import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
+import io.axoniq.demo.university.faculty.events.CourseFullyBooked;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
@@ -100,6 +101,23 @@ class SubscribeStudentToCourseTest {
                .command(new SubscribeStudentToCourse(student3Id, courseId))
                .then()
                .exception(RuntimeException.class, "Course is fully booked");
+    }
+
+    @Test
+    void courseFullyBookedWhenLastSpotTaken() {
+        var courseId = CourseId.random();
+        var student1Id = StudentId.random();
+        var student2Id = StudentId.random();
+
+        fixture.given()
+               .event(new StudentEnrolledInFaculty(student1Id, "Mateusz", "Nowak"))
+               .event(new StudentEnrolledInFaculty(student2Id, "Steven", "van Beelen"))
+               .event(new CourseCreated(courseId, "Event Sourcing Masterclass", 2))
+               .event(new StudentSubscribedToCourse(student1Id, courseId))
+               .when()
+               .command(new SubscribeStudentToCourse(student2Id, courseId))
+               .then()
+               .events(new StudentSubscribedToCourse(student2Id, courseId), new CourseFullyBooked(courseId));
     }
 
     @Test

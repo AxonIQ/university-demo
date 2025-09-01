@@ -32,7 +32,7 @@ public class WhenStudentSubscribedThenSendNotificationTest {
 
     // TODO: why does it take 18 seconds with InMemory, but 2 with AxonServer !!!???
     @Test
-    void test() {
+    void automationTest() {
         // given
         var eventGateway = sut.getComponent(EventGateway.class);
         RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);

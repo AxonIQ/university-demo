@@ -1,6 +1,5 @@
 package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier;
 
-import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.NotificationService;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
@@ -14,6 +13,7 @@ import org.axonframework.eventsourcing.annotation.reflection.EntityCreator;
 import org.axonframework.messaging.Message;
 import org.axonframework.messaging.MessageStream;
 import org.axonframework.messaging.unitofwork.ProcessingContext;
+import org.axonframework.modelling.StateManager;
 import org.axonframework.modelling.annotation.InjectEntity;
 
 import java.util.HashMap;
@@ -104,18 +104,18 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @EventHandler
         public MessageStream.Empty<?> react(
                 StudentSubscribedToCourse event,
-                @InjectEntity(idProperty = "facultyId") State state,
                 ProcessingContext context
         ) {
+            var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
             return sendNotificationIfAllCoursesFullyBooked(state, context);
         }
 
         @EventHandler
         public MessageStream.Empty<?> react(
                 CourseCapacityChanged event,
-                @InjectEntity(idProperty = "facultyId") State state,
                 ProcessingContext context
         ) {
+            var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
             return sendNotificationIfAllCoursesFullyBooked(state, context);
         }
 

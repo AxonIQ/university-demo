@@ -40,7 +40,7 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
     }
 
     @Test
-    void test() {
+    void automationTest() {
         // given
         var eventGateway = sut.getComponent(EventGateway.class);
         RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);

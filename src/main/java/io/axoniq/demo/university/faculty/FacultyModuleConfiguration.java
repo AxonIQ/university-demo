@@ -1,5 +1,6 @@
 package io.axoniq.demo.university.faculty;
 
+import io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier.AllCoursesFullyBookedNotifierConfiguration;
 import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.StudentSubscribedNotifierConfiguration;
 import io.axoniq.demo.university.faculty.write.changecoursecapacity.ChangeCourseCapacityConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourse.CreateCourseConfiguration;
@@ -27,6 +28,7 @@ public class FacultyModuleConfiguration {
 
         // Automations
         configurer = StudentSubscribedNotifierConfiguration.configure(configurer);
+        configurer = AllCoursesFullyBookedNotifierConfiguration.configure(configurer);
 
         return configurer;
     }

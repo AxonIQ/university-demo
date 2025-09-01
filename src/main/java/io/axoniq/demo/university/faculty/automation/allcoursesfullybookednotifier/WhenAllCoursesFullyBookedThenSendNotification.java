@@ -21,7 +21,9 @@ import java.util.Map;
 
 public class WhenAllCoursesFullyBookedThenSendNotification {
 
-    @EventSourcedEntity(tagKey = FacultyTags.COURSE_ID)
+    private static final String FACULTY_ID = "ONLY_FACULTY_ID";
+
+    @EventSourcedEntity
     record State(Map<CourseId, Course> courses, boolean notified) {
 
         record Course(int capacity, int students) {
@@ -84,7 +86,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @CommandHandler
         public void decide(
                 SendAllCoursesFullyBookedNotification command,
-                @InjectEntity State state,
+                @InjectEntity(idProperty = "facultyId") State state,
                 ProcessingContext context
         ) {
             var canNotify = state != null && !state.notified();
@@ -92,7 +94,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
                 var notification = new NotificationService.Notification("admin", "All courses are fully booked now.");
                 context.component(NotificationService.class).sendNotification(notification);
                 var eventAppender = EventAppender.forContext(context);
-                eventAppender.append(new AllCoursesFullyBookedNotificationSent());
+                eventAppender.append(new AllCoursesFullyBookedNotificationSent(command.facultyId()));
             }
         }
     }
@@ -102,7 +104,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @EventHandler
         public MessageStream.Empty<?> react(
                 StudentSubscribedToCourse event,
-                @InjectEntity State state,
+                @InjectEntity(idProperty = "facultyId") State state,
                 ProcessingContext context
         ) {
             return sendNotificationIfAllCoursesFullyBooked(state, context);
@@ -111,7 +113,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @EventHandler
         public MessageStream.Empty<?> react(
                 CourseCapacityChanged event,
-                @InjectEntity State state,
+                @InjectEntity(idProperty = "facultyId") State state,
                 ProcessingContext context
         ) {
             return sendNotificationIfAllCoursesFullyBooked(state, context);
@@ -123,7 +125,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
             var shouldNotify = allCoursesFullyBooked && !automationState.notified();
             if (shouldNotify) {
                 var commandGateway = context.component(CommandGateway.class);
-                commandGateway.send(new SendAllCoursesFullyBookedNotification(), context);
+                commandGateway.send(new SendAllCoursesFullyBookedNotification(FACULTY_ID), context);
             }
             return MessageStream.empty();
         }

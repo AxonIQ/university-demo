@@ -1,5 +1,5 @@
 package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier;
 
-public record AllCoursesFullyBookedNotificationSent() {
+public record AllCoursesFullyBookedNotificationSent(String facultyId) {
 
 }

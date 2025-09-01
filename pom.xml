@@ -10,6 +10,7 @@
 
     <properties>
         <assertj.version>3.27.3</assertj.version>
+        <awaitility.version>4.3.0</awaitility.version>
         <axon.version>5.0.0-M3</axon.version>
         <hamcrest.version>3.0</hamcrest.version>
         <junit.version>5.12.1</junit.version>
@@ -99,6 +100,12 @@
             <groupId>org.axonframework</groupId>
             <artifactId>axon-test</artifactId>
             <version>${axon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

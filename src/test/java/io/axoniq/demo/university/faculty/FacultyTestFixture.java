@@ -17,7 +17,7 @@ public class FacultyTestFixture {
         return AxonTestFixture.with(configurer);
     }
 
-    private static void useRecordingEventStoreAsStreamableEventSource(EventSourcingConfigurer configurer) {
+    public static void useRecordingEventStoreAsStreamableEventSource(EventSourcingConfigurer configurer) {
         configurer.componentRegistry(cr -> cr.registerComponent(StreamableEventSource.class, c -> {
             var eventStore = (RecordingEventStore) c.getComponent(EventStore.class);
             try {

@@ -1,4 +1,6 @@
-package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
+package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.infrastructure;
+
+import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.NotificationService;
 
 import java.util.logging.Logger;
 

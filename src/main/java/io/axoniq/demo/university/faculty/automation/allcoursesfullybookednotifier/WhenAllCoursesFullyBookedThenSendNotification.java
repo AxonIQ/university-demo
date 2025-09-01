@@ -51,7 +51,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
 
         @EventSourcingHandler
         State evolve(CourseCreated event) {
-            courses.put(event.courseId(), new Course(event.capacity(), 0, false));
+            courses.put(event.courseId(), new Course(event.capacity(), 0));
             return new State(courses, notified);
         }
 

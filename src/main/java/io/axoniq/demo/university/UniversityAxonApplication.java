@@ -11,6 +11,7 @@ import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +32,7 @@ public class UniversityAxonApplication {
     }
 
     public static AxonConfiguration startApplication(ConfigurationProperties configProps) {
-        var configurer = new UniversityAxonApplication().configurer(configProps);
+        var configurer = new UniversityAxonApplication().configurer(configProps, FacultyModuleConfiguration::configure);
         var configuration = configurer.start();
         printApplicationConfiguration(configuration);
         return configuration;
@@ -44,10 +45,13 @@ public class UniversityAxonApplication {
     }
 
     public EventSourcingConfigurer configurer() {
-        return configurer(ConfigurationProperties.load());
+        return configurer(ConfigurationProperties.load(), FacultyModuleConfiguration::configure);
     }
 
-    public EventSourcingConfigurer configurer(ConfigurationProperties configProps) {
+    public EventSourcingConfigurer configurer(
+            ConfigurationProperties configProps,
+            UnaryOperator<EventSourcingConfigurer> customization
+    ) {
         var configurer = EventSourcingConfigurer.create();
         if (configProps.axonServerEnabled) {
             configurer.componentRegistry(r -> r.registerComponent(AxonServerConfiguration.class, c -> {
@@ -58,7 +62,7 @@ public class UniversityAxonApplication {
         } else {
             configurer.componentRegistry(r -> r.disableEnhancer(AxonServerConfigurationEnhancer.class));
         }
-        configurer = FacultyModuleConfiguration.configure(configurer);
+        configurer = customization.apply(configurer);
         return configurer;
     }
 

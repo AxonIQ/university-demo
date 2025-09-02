@@ -23,7 +23,7 @@ class SubscribeStudentToCourseCommandHandler {
         eventAppender.append(events);
     }
 
-    private List<?> decide(SubscribeStudentToCourse command, Course course, Student student) {
+    private List<StudentSubscribedToCourse> decide(SubscribeStudentToCourse command, Course course, Student student) {
         assertStudentEnrolledFaculty(student);
         assertStudentNotSubscribedToTooManyCourses(student);
         assertCourseExists(course);

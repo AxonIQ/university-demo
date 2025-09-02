@@ -30,7 +30,7 @@ class SubscribeStudentToCourseCommandHandler {
         eventAppender.append(events);
     }
 
-    private List<?> decide(SubscribeStudentToCourse command, State state) {
+    private List<StudentSubscribedToCourse> decide(SubscribeStudentToCourse command, State state) {
         assertStudentEnrolledFaculty(state);
         assertStudentNotSubscribedToTooManyCourses(state);
         assertCourseExists(state);

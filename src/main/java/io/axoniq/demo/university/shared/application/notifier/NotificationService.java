@@ -1,4 +1,4 @@
-package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
+package io.axoniq.demo.university.shared.application.notifier;
 
 public interface NotificationService {
 

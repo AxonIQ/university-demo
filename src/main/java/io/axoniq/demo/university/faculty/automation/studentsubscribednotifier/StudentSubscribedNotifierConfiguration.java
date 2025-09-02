@@ -1,5 +1,6 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import org.axonframework.eventhandling.GlobalSequenceTrackingToken;
 import org.axonframework.eventhandling.configuration.EventProcessorModule;
 import org.axonframework.eventhandling.pooled.PooledStreamingEventProcessorModule;

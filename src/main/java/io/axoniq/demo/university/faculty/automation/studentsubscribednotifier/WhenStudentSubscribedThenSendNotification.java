@@ -1,6 +1,7 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.messaging.MessageStream;
 
@@ -27,5 +28,3 @@ public class WhenStudentSubscribedThenSendNotification {
     }
 
 }
-
-// todo: automation - when all courses

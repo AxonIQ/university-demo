@@ -2,7 +2,6 @@ package io.axoniq.demo.university.faculty.write.subscribestudentmulti;
 
 import io.axoniq.demo.university.faculty.FacultyTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
-import io.axoniq.demo.university.faculty.events.CourseFullyBooked;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
@@ -27,12 +26,12 @@ class SubscribeStudentToCourseTest {
         var studentId = StudentId.random();
 
         fixture.given()
-               .event(new StudentEnrolledInFaculty(studentId, "Mateusz", "Nowak"))
-               .event(new CourseCreated(courseId, "Axon Framework 5: Be a PRO", 2))
-               .when()
-               .command(new SubscribeStudentToCourse(studentId, courseId))
-               .then()
-               .events(new StudentSubscribedToCourse(studentId, courseId));
+                .event(new StudentEnrolledInFaculty(studentId, "Mateusz", "Nowak"))
+                .event(new CourseCreated(courseId, "Axon Framework 5: Be a PRO", 2))
+                .when()
+                .command(new SubscribeStudentToCourse(studentId, courseId))
+                .then()
+                .events(new StudentSubscribedToCourse(studentId, courseId));
     }
 
     @Test
@@ -41,13 +40,15 @@ class SubscribeStudentToCourseTest {
         var studentId = StudentId.random();
 
         fixture.given()
-               .event(new StudentEnrolledInFaculty(studentId, "Allard", "Buijze"))
-               .event(new CourseCreated(courseId, "Axon Framework 5: Be a PRO", 2))
-               .event(new StudentSubscribedToCourse(studentId, courseId))
-               .when()
-               .command(new SubscribeStudentToCourse(studentId, courseId))
-               .then()
-               .exception(RuntimeException.class, "Student already subscribed to this course");
+                .event(new StudentEnrolledInFaculty(studentId, "Allard", "Buijze"))
+                .event(new CourseCreated(courseId, "Axon Framework 5: Be a PRO", 2))
+                .event(new StudentSubscribedToCourse(studentId, courseId))
+                .when()
+                .command(new SubscribeStudentToCourse(studentId, courseId))
+                .then()
+                .exceptionSatisfies(thrown -> assertThat(thrown)
+                        .hasMessageContaining("Student already subscribed to this course")
+                );
     }
 
     @Test
@@ -58,33 +59,19 @@ class SubscribeStudentToCourseTest {
         var student3Id = StudentId.random();
 
         fixture.given()
-               .event(new StudentEnrolledInFaculty(student1Id, "Mateusz", "Nowak"))
-               .event(new StudentEnrolledInFaculty(student2Id, "Steven", "van Beelen"))
-               .event(new StudentEnrolledInFaculty(student3Id, "Mitchell", "Herrijgers"))
-               .event(new CourseCreated(courseId, "Event Sourcing Masterclass", 2))
-               .event(new StudentSubscribedToCourse(student1Id, courseId))
-               .event(new StudentSubscribedToCourse(student2Id, courseId))
-               .when()
-               .command(new SubscribeStudentToCourse(student3Id, courseId))
-               .then()
-               .exception(RuntimeException.class, "Course is fully booked");
-    }
-
-    @Test
-    void courseFullyBookedWhenLastSpotTaken() {
-        var courseId = CourseId.random();
-        var student1Id = StudentId.random();
-        var student2Id = StudentId.random();
-
-        fixture.given()
                 .event(new StudentEnrolledInFaculty(student1Id, "Mateusz", "Nowak"))
                 .event(new StudentEnrolledInFaculty(student2Id, "Steven", "van Beelen"))
+                .event(new StudentEnrolledInFaculty(student3Id, "Mitchell", "Herrijgers"))
                 .event(new CourseCreated(courseId, "Event Sourcing Masterclass", 2))
                 .event(new StudentSubscribedToCourse(student1Id, courseId))
+                .event(new StudentSubscribedToCourse(student2Id, courseId))
                 .when()
-                .command(new SubscribeStudentToCourse(student2Id, courseId))
+                .command(new SubscribeStudentToCourse(student3Id, courseId))
                 .then()
-                .events(new StudentSubscribedToCourse(student2Id, courseId), new CourseFullyBooked(courseId));
+                .noEvents()
+                .exceptionSatisfies(thrown -> assertThat(thrown)
+                        .hasMessageContaining("Course is fully booked")
+                );
     }
 
     @Test
@@ -96,21 +83,20 @@ class SubscribeStudentToCourseTest {
         var targetCourseId = CourseId.random();
 
         fixture.given()
-               .event(new StudentEnrolledInFaculty(studentId, "Milan", "Savic"))
-               .event(new CourseCreated(targetCourseId, "Programming", 10))
-               .event(new CourseCreated(course1Id, "Course 1", 10))
-               .event(new CourseCreated(course2Id, "Course 2", 10))
-               .event(new CourseCreated(course3Id, "Course 3", 10))
-               .event(new StudentSubscribedToCourse(studentId, course1Id))
-               .event(new StudentSubscribedToCourse(studentId, course2Id))
-               .event(new StudentSubscribedToCourse(studentId, course3Id))
-               .when()
-               .command(new SubscribeStudentToCourse(studentId, targetCourseId))
-               .then()
-               .noEvents()
-               .exceptionSatisfies(thrown -> assertThat(thrown)
-                       .isInstanceOf(RuntimeException.class)
-                       .hasMessage("Student subscribed to too many courses")
-               );
+                .event(new StudentEnrolledInFaculty(studentId, "Milan", "Savic"))
+                .event(new CourseCreated(targetCourseId, "Programming", 10))
+                .event(new CourseCreated(course1Id, "Course 1", 10))
+                .event(new CourseCreated(course2Id, "Course 2", 10))
+                .event(new CourseCreated(course3Id, "Course 3", 10))
+                .event(new StudentSubscribedToCourse(studentId, course1Id))
+                .event(new StudentSubscribedToCourse(studentId, course2Id))
+                .event(new StudentSubscribedToCourse(studentId, course3Id))
+                .when()
+                .command(new SubscribeStudentToCourse(studentId, targetCourseId))
+                .then()
+                .noEvents()
+                .exceptionSatisfies(thrown -> assertThat(thrown)
+                        .hasMessageContaining("Student subscribed to too many courses")
+                );
     }
 }

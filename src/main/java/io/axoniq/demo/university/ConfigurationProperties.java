@@ -45,4 +45,8 @@ public class ConfigurationProperties {
         }
         return null;
     }
+
+    public boolean axonServerEnabled() {
+        return axonServerEnabled;
+    }
 }

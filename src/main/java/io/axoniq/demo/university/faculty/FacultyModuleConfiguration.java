@@ -1,10 +1,10 @@
 package io.axoniq.demo.university.faculty;
 
 import io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier.AllCoursesFullyBookedNotifierConfiguration;
-import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.NotificationService;
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.StudentSubscribedNotifierConfiguration;
-import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.infrastructure.LoggingNotificationService;
-import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.infrastructure.RecordingNotificationService;
+import io.axoniq.demo.university.shared.infrastructure.notifier.LoggingNotificationService;
+import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
 import io.axoniq.demo.university.faculty.write.changecoursecapacity.ChangeCourseCapacityConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourse.CreateCourseConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCoursePlainConfiguration;

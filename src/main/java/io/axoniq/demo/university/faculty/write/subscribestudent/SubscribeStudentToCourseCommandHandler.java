@@ -14,7 +14,6 @@ import org.axonframework.eventstreaming.EventCriteria;
 import org.axonframework.eventstreaming.Tag;
 import org.axonframework.modelling.annotation.InjectEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 class SubscribeStudentToCourseCommandHandler {
@@ -38,13 +37,7 @@ class SubscribeStudentToCourseCommandHandler {
         assertEnoughVacantSpotsInCourse(state);
         assertStudentNotAlreadySubscribed(state);
 
-        var result = new ArrayList<>();
-        result.add(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
-        var lastSpotTaken = state.noOfStudentsSubscribedToCourse + 1 == state.courseCapacity;
-        if (lastSpotTaken) {
-            result.add(new CourseFullyBooked(command.courseId()));
-        }
-        return result;
+        return List.of(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
     }
 
     private void assertStudentEnrolledFaculty(State state) {

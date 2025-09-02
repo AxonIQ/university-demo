@@ -1,16 +1,20 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
+import io.axoniq.demo.university.ConfigurationProperties;
 import io.axoniq.demo.university.UniversityAxonApplication;
-import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.infrastructure.RecordingNotificationService;
+import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventhandling.gateway.EventGateway;
+import org.axonframework.test.server.AxonServerContainerUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,8 +25,15 @@ public class WhenStudentSubscribedThenSendNotificationTest {
     private AxonConfiguration sut;
 
     @BeforeEach
-    void beforeEach() {
-        sut = UniversityAxonApplication.startApplication();
+    void beforeEach() throws IOException {
+        var properties = ConfigurationProperties.load();
+        if (properties.axonServerEnabled()) {
+            AxonServerContainerUtils.purgeEventsFromAxonServer("localhost",
+                    8024,
+                    "university",
+                    AxonServerContainerUtils.DCB_CONTEXT);
+        }
+        sut = UniversityAxonApplication.startApplication(properties);
     }
 
     @AfterEach
@@ -30,7 +41,6 @@ public class WhenStudentSubscribedThenSendNotificationTest {
         sut.shutdown();
     }
 
-    // TODO: why does it take 18 seconds with InMemory, but 2 with AxonServer !!!???
     @Test
     void automationTest() {
         // given

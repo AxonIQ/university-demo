@@ -28,9 +28,6 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest extends Universit
 
     @Test
     void automationTest() {
-        // given
-        RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
-
         // when
         var studentId1 = StudentId.random();
         var studentId2 = StudentId.random();
@@ -49,6 +46,7 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest extends Universit
 
         // then
         var expectedNotification = new NotificationService.Notification("admin", "All courses are fully booked now.");
+        var notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
         await().atMost(10, TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(notificationService.sent()).contains(expectedNotification));
     }

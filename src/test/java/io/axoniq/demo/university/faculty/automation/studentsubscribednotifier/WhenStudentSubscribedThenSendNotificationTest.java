@@ -26,9 +26,6 @@ public class WhenStudentSubscribedThenSendNotificationTest extends UniversityApp
 
     @Test
     void automationTest() {
-        // given
-        RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
-
         // when
         var studentId = StudentId.random();
         var courseId = CourseId.random();
@@ -36,6 +33,7 @@ public class WhenStudentSubscribedThenSendNotificationTest extends UniversityApp
 
         // then
         var expectedNotification = new NotificationService.Notification(studentId.raw(), "You have subscribed to course " + courseId);
+        var notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
         await().atMost(2, TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(notificationService.sent()).contains(expectedNotification));
     }

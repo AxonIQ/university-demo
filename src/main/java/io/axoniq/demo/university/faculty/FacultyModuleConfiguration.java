@@ -1,10 +1,8 @@
 package io.axoniq.demo.university.faculty;
 
 import io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier.AllCoursesFullyBookedNotifierConfiguration;
-import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.faculty.automation.studentsubscribednotifier.StudentSubscribedNotifierConfiguration;
-import io.axoniq.demo.university.shared.infrastructure.notifier.LoggingNotificationService;
-import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
+import io.axoniq.demo.university.shared.configuration.NotificationServiceConfiguration;
 import io.axoniq.demo.university.faculty.write.changecoursecapacity.ChangeCourseCapacityConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourse.CreateCourseConfiguration;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCoursePlainConfiguration;
@@ -18,11 +16,7 @@ public class FacultyModuleConfiguration {
 
     public static EventSourcingConfigurer configure(EventSourcingConfigurer configurer) {
         // shared infrastructure
-        configurer = configurer.componentRegistry(cr -> cr.registerComponent(
-                NotificationService.class,
-                cfg -> new RecordingNotificationService(new LoggingNotificationService()))
-        );
-
+        configurer = NotificationServiceConfiguration.configure(configurer);
 
         // Write side
         configurer = CreateCourseConfiguration.configure(configurer);

@@ -2,12 +2,13 @@ package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifi
 
 import io.axoniq.demo.university.UniversityApplicationTest;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
+import io.axoniq.demo.university.shared.configuration.NotificationServiceConfiguration;
 import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
-import org.junit.jupiter.api.RepeatedTest;
+import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,6 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 public class WhenAllCoursesFullyBookedThenSendNotificationTest extends UniversityApplicationTest {
+
+    @Override
+    protected EventSourcingConfigurer overrideConfigurer(EventSourcingConfigurer configurer) {
+        configurer = NotificationServiceConfiguration.configure(configurer);
+        configurer = AllCoursesFullyBookedNotifierConfiguration.configure(configurer);
+        return configurer;
+    }
 
     @Test
     void automationTest() {

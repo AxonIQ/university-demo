@@ -19,11 +19,9 @@ import org.axonframework.messaging.MessageStream;
 import org.axonframework.messaging.unitofwork.UnitOfWorkFactory;
 import org.axonframework.test.fixture.MessagesRecordingConfigurationEnhancer;
 import org.axonframework.test.fixture.RecordingEventStore;
-import org.axonframework.test.server.AxonServerContainerUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

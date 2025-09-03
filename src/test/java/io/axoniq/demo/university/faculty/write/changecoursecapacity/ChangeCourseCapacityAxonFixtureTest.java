@@ -1,6 +1,6 @@
 package io.axoniq.demo.university.faculty.write.changecoursecapacity;
 
-import io.axoniq.demo.university.faculty.FacultyTestFixture;
+import io.axoniq.demo.university.faculty.FacultyAxonTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCapacityChanged;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ChangeCourseCapacityTest {
+class ChangeCourseCapacityAxonFixtureTest {
 
     private AxonTestFixture fixture;
 
     @BeforeEach
     void beforeEach() {
-        fixture = FacultyTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
+        fixture = FacultyAxonTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
     }
 
     @Test
@@ -41,7 +41,7 @@ class ChangeCourseCapacityTest {
     void givenCourseCreated_WhenChangeCapacity_ThenSuccess() {
         var courseId = CourseId.random();
         System.out.println("COURSE ID: " + courseId);
-        var fixutre = FacultyTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
+        var fixutre = FacultyAxonTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
         fixutre.given()
                 .event(new CourseCreated(courseId, "Event Sourcing in Practice", 42))
                 .when()

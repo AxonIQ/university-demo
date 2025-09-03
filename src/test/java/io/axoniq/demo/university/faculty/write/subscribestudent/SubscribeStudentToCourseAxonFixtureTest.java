@@ -1,6 +1,6 @@
 package io.axoniq.demo.university.faculty.write.subscribestudent;
 
-import io.axoniq.demo.university.faculty.FacultyTestFixture;
+import io.axoniq.demo.university.faculty.FacultyAxonTestFixture;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
@@ -11,13 +11,13 @@ import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SubscribeStudentToCourseTest {
+class SubscribeStudentToCourseAxonFixtureTest {
 
     private AxonTestFixture fixture;
 
     @BeforeEach
     void beforeEach() {
-        fixture = FacultyTestFixture.slice(SubscribeStudentConfiguration::configure);
+        fixture = FacultyAxonTestFixture.slice(SubscribeStudentConfiguration::configure);
     }
 
     @Test

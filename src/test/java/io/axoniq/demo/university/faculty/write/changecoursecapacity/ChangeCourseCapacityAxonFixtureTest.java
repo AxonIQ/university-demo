@@ -5,7 +5,6 @@ import io.axoniq.demo.university.faculty.events.CourseCapacityChanged;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
-import org.axonframework.commandhandling.CommandExecutionException;
 import org.axonframework.test.fixture.AxonTestFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
@@ -32,7 +31,7 @@ class ChangeCourseCapacityAxonFixtureTest {
                 .command(new ChangeCourseCapacity(courseId, 5))
                 .then()
                 .exceptionSatisfies(ex -> assertThat(ex)
-                        .isInstanceOf(CommandExecutionException.class)
+                        .isInstanceOf(IllegalStateException.class)
                         .hasMessageContaining("Course with given id does not exist")
                 );
     }
@@ -40,9 +39,8 @@ class ChangeCourseCapacityAxonFixtureTest {
     @RepeatedTest(10)
     void givenCourseCreated_WhenChangeCapacity_ThenSuccess() {
         var courseId = CourseId.random();
-        System.out.println("COURSE ID: " + courseId);
-        var fixutre = FacultyAxonTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
-        fixutre.given()
+
+        fixture.given()
                 .event(new CourseCreated(courseId, "Event Sourcing in Practice", 42))
                 .when()
                 .command(new ChangeCourseCapacity(courseId, 7))

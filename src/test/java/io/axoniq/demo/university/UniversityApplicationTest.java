@@ -1,7 +1,6 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
-import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import jakarta.annotation.Nonnull;
 import org.assertj.core.api.Assertions;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -34,14 +33,8 @@ public abstract class UniversityApplicationTest {
     protected AxonConfiguration sut;
 
     @BeforeEach
-    void beforeEach() throws IOException {
+    void beforeEach() {
         var properties = overrideProperties(ConfigurationProperties.load());
-        if (properties.axonServerEnabled()) {
-            AxonServerContainerUtils.purgeEventsFromAxonServer("localhost",
-                    8024,
-                    "university",
-                    AxonServerContainerUtils.DCB_CONTEXT);
-        }
         var configurer = new UniversityAxonApplication().configurer(properties, this::configureTestApplication);
         sut = configurer.start();
     }
@@ -119,7 +112,7 @@ public abstract class UniversityApplicationTest {
         Assertions.assertThat(eventStore.recorded().stream().map(Message::payload)).contains(events);
     }
 
-    protected void assertNoEvents(){
+    protected void assertNoEvents() {
         var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
         Assertions.assertThat(eventStore.recorded().stream().map(Message::payload)).isEmpty();
     }

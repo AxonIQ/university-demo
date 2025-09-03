@@ -13,7 +13,7 @@ public class CreateCourseTest extends UniversityApplicationTest {
         return CreateCourseConfiguration.configure(configurer);
     }
 
-    @RepeatedTest(10)
+    @Test
     void givenNotExistingCourse_WhenCreateCourse_ThenSuccess() {
         // given
         var courseId = CourseId.random();

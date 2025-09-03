@@ -11,7 +11,11 @@ import org.axonframework.test.fixture.RecordingEventStore;
 
 import java.util.function.UnaryOperator;
 
-public class FacultyTestFixture {
+/**
+ * Due to some bugs in the Milestone 3 release, the test fixture only works without AxonServer (using InMemoryEventStorageEngine)
+ * and requires the {@link FacultyAxonTestFixture#useRecordingEventStoreAsStreamableEventSource} to do not be broken by EventProcessor.
+ */
+public class FacultyAxonTestFixture {
 
     public static AxonTestFixture app() {
         return slice(FacultyModuleConfiguration::configure);
@@ -39,7 +43,7 @@ public class FacultyTestFixture {
         }));
     }
 
-    private FacultyTestFixture() {
+    private FacultyAxonTestFixture() {
 
     }
 }

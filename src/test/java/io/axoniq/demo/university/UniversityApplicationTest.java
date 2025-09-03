@@ -98,7 +98,7 @@ public abstract class UniversityApplicationTest {
     protected void eventsOccurred(Object... events) {
         var eventGateway = sut.getComponent(EventGateway.class);
         for (Object event : events) {
-            eventGateway.publish(null, event);
+            eventGateway.publish(null, event).join();
         }
         var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
         eventStore.reset();
@@ -106,7 +106,7 @@ public abstract class UniversityApplicationTest {
 
     protected void eventsOccurred(List<Object> events) {
         var eventGateway = sut.getComponent(EventGateway.class);
-        events.forEach(e -> eventGateway.publish(null, e));
+        events.forEach(e -> eventGateway.publish(null, e).join());
         var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
         eventStore.reset();
     }

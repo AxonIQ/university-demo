@@ -26,14 +26,11 @@ class ChangeCourseCapacityCommandHandler {
 
     private List<CourseCapacityChanged> decide(ChangeCourseCapacity command, State state) {
         if (!state.created) {
-            System.out.println("RESULT: Exception");
             throw new IllegalStateException("Course with given id does not exist");
         }
         if (command.capacity() == state.capacity) {
-            System.out.println("RESULT: NOTHING");
             return List.of();
         }
-        System.out.println("RESULT: CourseCapacityChanged");
         return List.of(new CourseCapacityChanged(command.courseId(), command.capacity()));
     }
 

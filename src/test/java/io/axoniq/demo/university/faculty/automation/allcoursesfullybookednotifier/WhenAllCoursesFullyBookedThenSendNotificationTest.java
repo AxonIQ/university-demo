@@ -3,6 +3,7 @@ package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifi
 import io.axoniq.demo.university.ConfigurationProperties;
 import io.axoniq.demo.university.UniversityAxonApplication;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
+import io.axoniq.demo.university.shared.infrastructure.notifier.LoggingNotificationService;
 import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
@@ -22,11 +23,15 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 public class WhenAllCoursesFullyBookedThenSendNotificationTest {
+
+    private static final Logger logger = Logger.getLogger(WhenAllCoursesFullyBookedThenSendNotificationTest.class.getName());
+
 
     private AxonConfiguration sut;
 
@@ -50,7 +55,6 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
     @RepeatedTest(10)
     void automationTest() {
         // given
-        var eventGateway = sut.getComponent(EventGateway.class);
         RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
 
         // when
@@ -58,6 +62,9 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
         var studentId2 = StudentId.random();
         var courseId1 = CourseId.random();
         var courseId2 = CourseId.random();
+        System.out.println("Using courseId1 = " + courseId1 + ", courseId2 = " + courseId2);
+        logger.info("Using courseId1 = " + courseId1 + ", courseId2 = " + courseId2);
+
         List<Object> events = List.of(
                 new CourseCreated(courseId1, "Course 1", 2),
                 new CourseCreated(courseId2, "Course 1", 2),
@@ -79,8 +86,6 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
         var unitOfWork = sut.getComponent(UnitOfWorkFactory.class).create();
         unitOfWork.onInvocation(ctx -> eventGateway.publish(null, events));
         unitOfWork.execute().join();
-//        var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
-//        eventStore.reset();
     }
 
 }

@@ -17,6 +17,7 @@ import org.axonframework.eventstreaming.StreamableEventSource;
 import org.axonframework.eventstreaming.StreamingCondition;
 import org.axonframework.messaging.Message;
 import org.axonframework.messaging.MessageStream;
+import org.axonframework.messaging.unitofwork.UnitOfWorkFactory;
 import org.axonframework.test.fixture.MessagesRecordingConfigurationEnhancer;
 import org.axonframework.test.fixture.RecordingEventStore;
 import org.axonframework.test.server.AxonServerContainerUtils;
@@ -96,17 +97,14 @@ public abstract class UniversityApplicationTest {
     }
 
     protected void eventsOccurred(Object... events) {
-        var eventGateway = sut.getComponent(EventGateway.class);
-        for (Object event : events) {
-            eventGateway.publish(null, event).join();
-        }
-        var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
-        eventStore.reset();
+        eventsOccurred(List.of(events));
     }
 
     protected void eventsOccurred(List<Object> events) {
         var eventGateway = sut.getComponent(EventGateway.class);
-        events.forEach(e -> eventGateway.publish(null, e).join());
+        var unitOfWork = sut.getComponent(UnitOfWorkFactory.class).create();
+        unitOfWork.onInvocation(ctx -> eventGateway.publish(null, events));
+        unitOfWork.execute().join();
         var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
         eventStore.reset();
     }

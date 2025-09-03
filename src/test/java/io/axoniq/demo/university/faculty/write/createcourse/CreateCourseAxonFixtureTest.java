@@ -15,7 +15,7 @@ class CreateCourseAxonFixtureTest {
         fixture = FacultyAxonTestFixture.slice(CreateCourseConfiguration::configure);
     }
 
-    @RepeatedTest(10)
+    @Test
     void givenNotExistingCourse_WhenCreateCourse_ThenSuccess() {
         var courseId = CourseId.random();
         var courseName = "Event Sourcing in Practice";

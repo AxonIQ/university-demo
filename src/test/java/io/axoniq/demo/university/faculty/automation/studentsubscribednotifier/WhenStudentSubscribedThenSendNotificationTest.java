@@ -19,7 +19,6 @@ public class WhenStudentSubscribedThenSendNotificationTest extends UniversityApp
     @Test
     void automationTest() {
         // given
-        var eventGateway = sut.getComponent(EventGateway.class);
         RecordingNotificationService notificationService = (RecordingNotificationService) sut.getComponent(NotificationService.class);
 
         // when

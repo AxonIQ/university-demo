@@ -10,9 +10,13 @@ import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventhandling.gateway.EventGateway;
+import org.axonframework.eventsourcing.eventstore.EventStore;
+import org.axonframework.messaging.unitofwork.UnitOfWorkFactory;
+import org.axonframework.test.fixture.RecordingEventStore;
 import org.axonframework.test.server.AxonServerContainerUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -40,10 +44,10 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
 
     @AfterEach
     void afterEach() {
-        sut.shutdown();
+//        sut.shutdown();
     }
 
-    @Test
+    @RepeatedTest(10)
     void automationTest() {
         // given
         var eventGateway = sut.getComponent(EventGateway.class);
@@ -54,7 +58,7 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
         var studentId2 = StudentId.random();
         var courseId1 = CourseId.random();
         var courseId2 = CourseId.random();
-        var events = List.of(
+        List<Object> events = List.of(
                 new CourseCreated(courseId1, "Course 1", 2),
                 new CourseCreated(courseId2, "Course 1", 2),
                 new StudentSubscribedToCourse(studentId1, courseId1),
@@ -62,12 +66,21 @@ public class WhenAllCoursesFullyBookedThenSendNotificationTest {
                 new StudentSubscribedToCourse(studentId1, courseId2),
                 new StudentSubscribedToCourse(studentId2, courseId2)
         );
-        events.forEach(e -> eventGateway.publish(null, e));
+        eventsOccurred(events);
 
         // then
         var expectedNotification = new NotificationService.Notification("admin", "All courses are fully booked now.");
         await().atMost(10, TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(notificationService.sent()).contains(expectedNotification));
+    }
+
+    protected void eventsOccurred(List<Object> events) {
+        var eventGateway = sut.getComponent(EventGateway.class);
+        var unitOfWork = sut.getComponent(UnitOfWorkFactory.class).create();
+        unitOfWork.onInvocation(ctx -> eventGateway.publish(null, events));
+        unitOfWork.execute().join();
+//        var eventStore = (RecordingEventStore) sut.getComponent(EventStore.class);
+//        eventStore.reset();
     }
 
 }

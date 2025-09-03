@@ -46,6 +46,11 @@ public abstract class UniversityApplicationTest {
         sut = configurer.start();
     }
 
+    @AfterEach
+    void afterEach() {
+        sut.shutdown();
+    }
+
     private EventSourcingConfigurer configureTestApplication(EventSourcingConfigurer configurer) {
         configurer = configurer.componentRegistry(cr -> cr.registerEnhancer(new MessagesRecordingConfigurationEnhancer()));
         configurer = useEventStorageEngineAsEventSource(configurer);
@@ -85,11 +90,6 @@ public abstract class UniversityApplicationTest {
                 return eventStorageEngine.tokenAt(at);
             }
         };
-    }
-
-    @AfterEach
-    void afterEach() {
-        sut.shutdown();
     }
 
     protected void eventOccurred(Object event) {

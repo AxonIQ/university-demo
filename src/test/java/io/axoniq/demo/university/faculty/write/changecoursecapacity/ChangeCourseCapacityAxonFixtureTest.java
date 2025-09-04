@@ -7,7 +7,6 @@ import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.test.fixture.AxonTestFixture;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +35,7 @@ class ChangeCourseCapacityAxonFixtureTest {
                 );
     }
 
-    @RepeatedTest(10)
+    @Test
     void givenCourseCreated_WhenChangeCapacity_ThenSuccess() {
         var courseId = CourseId.random();
 

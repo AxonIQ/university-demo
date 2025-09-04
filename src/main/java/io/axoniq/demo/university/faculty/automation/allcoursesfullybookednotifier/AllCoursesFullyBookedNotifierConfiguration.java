@@ -30,7 +30,7 @@ public class AllCoursesFullyBookedNotifierConfiguration {
                 .build();
 
         return configurer
-                .componentRegistry(cr -> cr.registerModule(automationState))
+                .registerEntity(automationState)
                 .registerCommandHandlingModule(commandHandlingModule)
                 .modelling(modelling -> modelling.messaging(messaging -> messaging.eventProcessing(eventProcessing ->
                         eventProcessing.pooledStreaming(ps -> ps.processor(automationProcessor))

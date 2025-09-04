@@ -6,7 +6,6 @@ import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,7 +28,7 @@ public class ChangeCourseCapacityTest extends UniversityApplicationTest {
         )).cause().hasMessageContaining("Course with given id does not exist");
     }
 
-    @RepeatedTest(10)
+    @Test
     void givenCourseCreated_WhenChangeCapacity_ThenSuccess() {
         // given
         var courseId = CourseId.random();

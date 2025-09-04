@@ -43,7 +43,7 @@ public class ChangeCourseCapacityTest extends UniversityApplicationTest {
         );
 
         // then
-        eventOccurred(
+        assertEvents(
                 new CourseCapacityChanged(courseId, 7)
         );
     }
@@ -80,7 +80,7 @@ public class ChangeCourseCapacityTest extends UniversityApplicationTest {
         );
 
         // then
-        eventOccurred(
+        assertEvents(
                 new CourseCapacityChanged(courseId, 7)
         );
     }

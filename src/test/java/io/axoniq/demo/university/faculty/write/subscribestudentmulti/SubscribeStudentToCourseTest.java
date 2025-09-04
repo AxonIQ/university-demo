@@ -33,7 +33,7 @@ public class SubscribeStudentToCourseTest extends UniversityApplicationTest {
         executeCommand(new SubscribeStudentToCourse(studentId, courseId));
 
         // then
-        eventOccurred(new StudentSubscribedToCourse(studentId, courseId));
+        assertEvents(new StudentSubscribedToCourse(studentId, courseId));
     }
 
     @Test

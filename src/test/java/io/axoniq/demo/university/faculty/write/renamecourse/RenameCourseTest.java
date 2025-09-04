@@ -41,7 +41,7 @@ public class RenameCourseTest extends UniversityApplicationTest {
         );
 
         // then
-        eventOccurred(
+        assertEvents(
                 new CourseRenamed(courseId, "Event Sourcing in Theory")
         );
     }
@@ -78,7 +78,7 @@ public class RenameCourseTest extends UniversityApplicationTest {
         );
 
         // then
-        eventOccurred(
+        assertEvents(
                 new CourseRenamed(courseId, "Theoretical Practice of Event Sourcing")
         );
     }

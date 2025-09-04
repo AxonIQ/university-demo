@@ -33,7 +33,7 @@ public class UnsubscribeStudentFromCourseTest extends UniversityApplicationTest 
         executeCommand(new UnsubscribeStudentFromCourse(studentId, courseId));
 
         // then
-        eventOccurred(new StudentUnsubscribedFromCourse(studentId, courseId));
+        assertEvents(new StudentUnsubscribedFromCourse(studentId, courseId));
     }
 
     @Test

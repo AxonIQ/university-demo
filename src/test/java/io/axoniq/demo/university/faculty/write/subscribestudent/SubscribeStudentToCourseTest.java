@@ -7,6 +7,7 @@ import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -79,7 +80,7 @@ class SubscribeStudentToCourseTest extends UniversityApplicationTest {
         assertNoEvents();
     }
 
-    @Test
+    @RepeatedTest(10)
     void studentSubscribedToTooManyCourses() {
         // given
         var studentId = StudentId.random();

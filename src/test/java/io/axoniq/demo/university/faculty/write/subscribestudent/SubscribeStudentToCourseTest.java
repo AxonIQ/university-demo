@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class SubscribeStudentToCourseTest extends UniversityApplicationTest {
+class SubscribeStudentToCourseTest extends UniversityApplicationTest {
 
     @Override
     protected EventSourcingConfigurer overrideConfigurer(EventSourcingConfigurer configurer) {

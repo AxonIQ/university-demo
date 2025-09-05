@@ -6,7 +6,7 @@ import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 import org.junit.jupiter.api.Test;
 
-public class CreateCourseTest extends UniversityApplicationTest {
+class CreateCourseTest extends UniversityApplicationTest {
 
     @Override
     protected EventSourcingConfigurer overrideConfigurer(EventSourcingConfigurer configurer) {

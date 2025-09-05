@@ -10,7 +10,7 @@ import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 import org.junit.jupiter.api.Test;
 
-public class UnsubscribeStudentFromCourseTest extends UniversityApplicationTest {
+class UnsubscribeStudentFromCourseTest extends UniversityApplicationTest {
 
     @Override
     protected EventSourcingConfigurer overrideConfigurer(EventSourcingConfigurer configurer) {

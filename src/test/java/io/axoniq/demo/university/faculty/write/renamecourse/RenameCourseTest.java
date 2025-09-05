@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class RenameCourseTest extends UniversityApplicationTest {
+class RenameCourseTest extends UniversityApplicationTest {
 
     @Override
     protected EventSourcingConfigurer overrideConfigurer(EventSourcingConfigurer configurer) {

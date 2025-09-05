@@ -44,43 +44,8 @@ public abstract class UniversityApplicationTest {
 
     private EventSourcingConfigurer configureTestApplication(EventSourcingConfigurer configurer) {
         configurer = configurer.componentRegistry(cr -> cr.registerEnhancer(new MessagesRecordingConfigurationEnhancer()));
-        configurer = useEventStorageEngineAsEventSource(configurer);
         configurer = overrideConfigurer(configurer);
         return configurer;
-    }
-
-    private static EventSourcingConfigurer useEventStorageEngineAsEventSource(EventSourcingConfigurer eventSourcingConfigurer) {
-        return eventSourcingConfigurer.messaging(m -> m.eventProcessing(
-                        ep -> ep.pooledStreaming(
-                                ps -> ps.defaults((cfg, d) -> d.eventSource(eventSourceFromEventStorageEngine(cfg)))
-                        )
-                )
-        );
-    }
-
-    private static StreamableEventSource<EventMessage> eventSourceFromEventStorageEngine(Configuration configuration) {
-        var eventStorageEngine = configuration.getComponent(EventStorageEngine.class);
-        return new StreamableEventSource<>() {
-            @Override
-            public MessageStream<EventMessage> open(@Nonnull StreamingCondition condition) {
-                return eventStorageEngine.stream(condition);
-            }
-
-            @Override
-            public CompletableFuture<TrackingToken> firstToken() {
-                return eventStorageEngine.firstToken();
-            }
-
-            @Override
-            public CompletableFuture<TrackingToken> latestToken() {
-                return eventStorageEngine.latestToken();
-            }
-
-            @Override
-            public CompletableFuture<TrackingToken> tokenAt(@Nonnull Instant at) {
-                return eventStorageEngine.tokenAt(at);
-            }
-        };
     }
 
     protected void eventOccurred(Object event) {

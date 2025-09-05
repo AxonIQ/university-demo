@@ -5,6 +5,7 @@ import io.axoniq.demo.university.shared.application.notifier.NotificationService
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.commandhandling.annotation.CommandHandler;
+import org.axonframework.commandhandling.gateway.CommandDispatcher;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
@@ -19,14 +20,15 @@ import org.axonframework.modelling.annotation.InjectEntity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class represents the automation of sending a Command some condition is met.
  * It's a Stateful Event Handler that reacts on multiple events and tracks the state (left spots) of courses.
- *
+ * <p>
  * The implementation uses event soured entity to track the state of courses and their capacities.
  * When all courses are determined to be fully booked, a notification is sent to the appropriate recipient.
- *
+ * <p>
  * The functionality includes:
  * - Managing the state of courses (availability and subscription levels).
  * - Reacting to events such as course capacity updates, student subscriptions, and unsubscriptions.
@@ -115,34 +117,38 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
     static class AutomationEventHandler {
 
         @EventHandler
-        public MessageStream.Empty<?> react(
+        public CompletableFuture<?> react(
                 StudentSubscribedToCourse event,
+                CommandDispatcher commandDispatcher,
                 ProcessingContext context
         ) {
             var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
-            return sendNotificationIfAllCoursesFullyBooked(state, context);
+            return sendNotificationIfAllCoursesFullyBooked(state, commandDispatcher);
         }
 
         @EventHandler
-        public MessageStream.Empty<?> react(
+        public CompletableFuture<?> react(
                 CourseCapacityChanged event,
+                CommandDispatcher commandDispatcher,
                 ProcessingContext context
         ) {
             var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
-            return sendNotificationIfAllCoursesFullyBooked(state, context);
+            return sendNotificationIfAllCoursesFullyBooked(state, commandDispatcher);
         }
 
-        private MessageStream.Empty<Message> sendNotificationIfAllCoursesFullyBooked(State state, ProcessingContext context) {
+        private CompletableFuture<?> sendNotificationIfAllCoursesFullyBooked(
+                State state,
+                CommandDispatcher commandDispatcher
+        ) {
             var automationState = state != null ? state : new State();
             var allCoursesFullyBooked = automationState.courses.values().stream().allMatch(State.Course::isFullyBooked);
             var shouldNotify = allCoursesFullyBooked && !automationState.notified();
-            if (shouldNotify) {
-                var commandGateway = context.component(CommandGateway.class);
-                commandGateway.send(new SendAllCoursesFullyBookedNotification(FACULTY_ID), context);
+            if (!shouldNotify) {
+                return CompletableFuture.completedFuture(null);
             }
-            return MessageStream.empty();
+            return commandDispatcher.send(new SendAllCoursesFullyBookedNotification(FACULTY_ID), Object.class);
         }
-    }
 
+    }
 
 }

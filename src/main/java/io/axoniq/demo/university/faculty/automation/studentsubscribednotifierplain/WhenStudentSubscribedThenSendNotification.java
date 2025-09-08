@@ -3,7 +3,6 @@ package io.axoniq.demo.university.faculty.automation.studentsubscribednotifierpl
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import org.axonframework.eventhandling.EventMessage;
-import org.axonframework.eventhandling.annotations.EventHandler;
 import org.axonframework.messaging.Message;
 import org.axonframework.messaging.MessageStream;
 import org.axonframework.messaging.conversion.MessageConverter;
@@ -15,10 +14,9 @@ import org.axonframework.messaging.unitofwork.ProcessingContext;
  */
 class WhenStudentSubscribedThenSendNotification {
 
-    @EventHandler
     static MessageStream.Empty<Message> react(EventMessage event, ProcessingContext context) {
         var converter = context.component(MessageConverter.class);
-        var payload = converter.convert(event, StudentSubscribedToCourse.class);
+        var payload = event.payloadAs(StudentSubscribedToCourse.class, converter);
         var notificationService = context.component(NotificationService.class);
         var notification = new NotificationService.Notification(
                 payload.studentId().toString(),

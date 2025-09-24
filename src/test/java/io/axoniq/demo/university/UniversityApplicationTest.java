@@ -81,7 +81,7 @@ public abstract class UniversityApplicationTest {
     }
 
     protected ConfigurationProperties overrideProperties(ConfigurationProperties properties) {
-        return properties.axonServerEnabled(false);
+        return properties.axonServerEnabled(true);
     }
 
     /**

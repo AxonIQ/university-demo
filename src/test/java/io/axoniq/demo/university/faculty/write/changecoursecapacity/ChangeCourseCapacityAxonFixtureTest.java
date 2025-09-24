@@ -35,7 +35,7 @@ class ChangeCourseCapacityAxonFixtureTest {
                 .when()
                 .command(new ChangeCourseCapacity(courseId, 5))
                 .then()
-                .exceptionSatisfies(ex -> assertThat(ex)
+                .exceptionSatisfies(ex -> assertThat(ex) // CommandExecutionException in AxonServer, but not in the InMemory?
                         .isInstanceOf(IllegalStateException.class)
                         .hasMessageContaining("Course with given id does not exist")
                 );

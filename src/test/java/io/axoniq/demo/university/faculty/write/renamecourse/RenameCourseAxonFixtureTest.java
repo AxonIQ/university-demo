@@ -16,6 +16,11 @@ class RenameCourseAxonFixtureTest {
         fixture = FacultyAxonTestFixture.slice(RenameCourseConfiguration::configure);
     }
 
+    @AfterEach
+    void afterEach() {
+        fixture.stop();
+    }
+
     @Test
     void givenNotExistingCourse_WhenRenameCourse_ThenException() {
         var courseId = CourseId.random();

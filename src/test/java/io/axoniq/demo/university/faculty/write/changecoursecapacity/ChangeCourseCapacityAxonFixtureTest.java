@@ -6,6 +6,7 @@ import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.test.fixture.AxonTestFixture;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,11 @@ class ChangeCourseCapacityAxonFixtureTest {
     @BeforeEach
     void beforeEach() {
         fixture = FacultyAxonTestFixture.slice(ChangeCourseCapacityConfiguration::configure);
+    }
+
+    @AfterEach
+    void afterEach() {
+        fixture.stop();
     }
 
     @Test

@@ -1,11 +1,10 @@
-package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier;
+package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
 import io.axoniq.demo.university.faculty.FacultyAxonTestFixture;
-import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.configuration.NotificationServiceConfiguration;
 import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
-import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.configuration.Configuration;
@@ -16,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WhenAllCoursesFullyBookedThenSendNotificationAxonFixtureTest {
+public class WhenStudentSubscribedThenSendNotificationAxonFixtureTest {
 
     private AxonTestFixture fixture;
 
@@ -24,7 +23,7 @@ public class WhenAllCoursesFullyBookedThenSendNotificationAxonFixtureTest {
     void beforeEach() {
         fixture = FacultyAxonTestFixture.slice(configurer -> {
             configurer = NotificationServiceConfiguration.configure(configurer);
-            return AllCoursesFullyBookedNotifierConfiguration.configure(configurer);
+            return StudentSubscribedNotifierConfiguration.configure(configurer);
         });
     }
 
@@ -35,22 +34,13 @@ public class WhenAllCoursesFullyBookedThenSendNotificationAxonFixtureTest {
 
     @Test
     void automationTest() {
-        var studentId1 = StudentId.random();
-        var studentId2 = StudentId.random();
-        var courseId1 = CourseId.random();
-        var courseId2 = CourseId.random();
+        var studentId = StudentId.random();
+        var courseId = CourseId.random();
 
-        var expectedNotification = new NotificationService.Notification("admin", "All courses are fully booked now.");
+        var expectedNotification = new NotificationService.Notification(studentId.raw(), "You have subscribed to course " + courseId);
 
         fixture.given()
-                .events(
-                        new CourseCreated(courseId1, "Course 1", 2),
-                        new CourseCreated(courseId2, "Course 2", 2),
-                        new StudentSubscribedToCourse(studentId1, courseId1),
-                        new StudentSubscribedToCourse(studentId2, courseId1),
-                        new StudentSubscribedToCourse(studentId1, courseId2),
-                        new StudentSubscribedToCourse(studentId2, courseId2)
-                )
+                .events(new StudentSubscribedToCourse(studentId, courseId))
                 .then()
                 .await(r -> r.expect(cfg -> assertNotificationSent(cfg, expectedNotification)));
     }

@@ -19,8 +19,9 @@ public class FacultyAxonTestFixture {
 
     public static AxonTestFixture slice(UnaryOperator<EventSourcingConfigurer> customization) {
         var application = new UniversityAxonApplication();
-        var configurer = application.configurer(ConfigurationProperties.load(), customization);
-        return AxonTestFixture.with(configurer);
+        ConfigurationProperties configuration = ConfigurationProperties.load();
+        var configurer = application.configurer(configuration, customization);
+        return AxonTestFixture.with(configurer, c -> c.axonServerEnabled(configuration.axonServerEnabled()));
     }
 
     private FacultyAxonTestFixture() {

@@ -1,30 +1,20 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
-import jakarta.annotation.Nonnull;
 import org.assertj.core.api.Assertions;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.configuration.AxonConfiguration;
-import org.axonframework.configuration.Configuration;
-import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.eventhandling.gateway.EventGateway;
-import org.axonframework.eventhandling.processors.streaming.token.TrackingToken;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.axonframework.eventsourcing.eventstore.EventStorageEngine;
 import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.axonframework.eventstreaming.StreamableEventSource;
-import org.axonframework.eventstreaming.StreamingCondition;
 import org.axonframework.messaging.Message;
-import org.axonframework.messaging.MessageStream;
 import org.axonframework.messaging.unitofwork.UnitOfWorkFactory;
 import org.axonframework.test.fixture.MessagesRecordingConfigurationEnhancer;
 import org.axonframework.test.fixture.RecordingEventStore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class UniversityApplicationTest {
 
@@ -81,7 +71,7 @@ public abstract class UniversityApplicationTest {
     }
 
     protected ConfigurationProperties overrideProperties(ConfigurationProperties properties) {
-        return properties.axonServerEnabled(true);
+        return properties;
     }
 
     /**

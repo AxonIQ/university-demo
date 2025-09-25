@@ -11,9 +11,11 @@ import org.axonframework.messaging.Message;
 import org.axonframework.messaging.unitofwork.UnitOfWorkFactory;
 import org.axonframework.test.fixture.MessagesRecordingConfigurationEnhancer;
 import org.axonframework.test.fixture.RecordingEventStore;
+import org.axonframework.test.server.AxonServerContainerUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class UniversityApplicationTest {
@@ -22,9 +24,22 @@ public abstract class UniversityApplicationTest {
 
     @BeforeEach
     void beforeEach() {
-        var properties = overrideProperties(ConfigurationProperties.load());
+        var configuration = ConfigurationProperties.load();
+        var properties = overrideProperties(configuration);
+        purgeAxonServerIfEnabled(configuration);
         var configurer = new UniversityAxonApplication().configurer(properties, this::configureTestApplication);
-        configuration = configurer.start();
+        this.configuration = configurer.start();
+    }
+
+    private static void purgeAxonServerIfEnabled(ConfigurationProperties configuration) {
+        boolean axonServerEnabled = configuration.axonServerEnabled();
+        if (axonServerEnabled) {
+            try {
+                AxonServerContainerUtils.purgeEventsFromAxonServer("localhost", 8024, "university", true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @AfterEach

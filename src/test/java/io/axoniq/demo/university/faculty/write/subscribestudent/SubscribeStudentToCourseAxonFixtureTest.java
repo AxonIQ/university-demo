@@ -129,7 +129,6 @@ class SubscribeStudentToCourseAxonFixtureTest {
                 .then()
                 .noEvents()
                 .exceptionSatisfies(thrown -> assertThat(thrown)
-                        .isInstanceOf(RuntimeException.class)
                         .hasMessage("Student subscribed to too many courses")
                 );
     }

@@ -15,6 +15,7 @@ class CourseStatsConfiguration {
 
         return configurer
                 .componentRegistry(cr -> cr.registerComponent(CourseStatsRepository.class, cfg -> new InMemoryCourseStatsRepository()))
+                .componentRegistry(cr -> cr.registerComponent(GetCourseStatsByIdQueryHandler.class, cfg -> new GetCourseStatsByIdQueryHandler(cfg.getComponent(CourseStatsRepository.class))))
                 .modelling(modelling -> modelling.messaging(messaging -> messaging.eventProcessing(eventProcessing ->
                         eventProcessing.pooledStreaming(ps -> ps.processor(projectionProcessor))
                 )));

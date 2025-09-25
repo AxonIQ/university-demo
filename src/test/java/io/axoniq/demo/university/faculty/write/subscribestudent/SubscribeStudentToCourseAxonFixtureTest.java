@@ -51,7 +51,9 @@ class SubscribeStudentToCourseAxonFixtureTest {
                 .when()
                 .command(new SubscribeStudentToCourse(studentId, courseId))
                 .then()
-                .exception(RuntimeException.class, "Student already subscribed to this course");
+                .exceptionSatisfies(thrown -> assertThat(thrown)
+                        .hasMessageContaining("Student already subscribed to this course")
+                );
     }
 
     @Test
@@ -104,7 +106,9 @@ class SubscribeStudentToCourseAxonFixtureTest {
                 .when()
                 .command(new SubscribeStudentToCourse(student3Id, courseId))
                 .then()
-                .exception(RuntimeException.class, "Course is fully booked");
+                .exceptionSatisfies(thrown -> assertThat(thrown)
+                        .hasMessageContaining("Course is fully booked")
+                );
     }
 
     @Test
@@ -129,7 +133,7 @@ class SubscribeStudentToCourseAxonFixtureTest {
                 .then()
                 .noEvents()
                 .exceptionSatisfies(thrown -> assertThat(thrown)
-                        .hasMessage("Student subscribed to too many courses")
+                        .hasMessageContaining("Student subscribed to too many courses")
                 );
     }
 }

@@ -52,7 +52,7 @@ class SubscribeStudentToCourseTest extends UniversityApplicationTest {
         // when-then
         assertThatThrownBy(() -> executeCommand(
                 new SubscribeStudentToCourse(studentId, courseId)
-        )).cause().hasMessageContaining("Student already subscribed to this course");
+        )).hasMessageContaining("Student already subscribed to this course");
         assertNoEvents();
     }
 
@@ -76,7 +76,7 @@ class SubscribeStudentToCourseTest extends UniversityApplicationTest {
         // when-then
         assertThatThrownBy(() -> executeCommand(
                 new SubscribeStudentToCourse(student3Id, courseId)
-        )).cause().hasMessageContaining("Course is fully booked");
+        )).hasMessageContaining("Course is fully booked");
         assertNoEvents();
     }
 
@@ -103,7 +103,7 @@ class SubscribeStudentToCourseTest extends UniversityApplicationTest {
         // when-then
         assertThatThrownBy(() -> executeCommand(
                 new SubscribeStudentToCourse(studentId, targetCourseId)
-        )).cause().hasMessageContaining("Student subscribed to too many courses");
+        )).hasMessageContaining("Student subscribed to too many courses");
         assertNoEvents();
     }
 }

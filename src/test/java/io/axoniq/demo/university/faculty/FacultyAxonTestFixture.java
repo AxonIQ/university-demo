@@ -2,12 +2,8 @@ package io.axoniq.demo.university.faculty;
 
 import io.axoniq.demo.university.ConfigurationProperties;
 import io.axoniq.demo.university.UniversityAxonApplication;
-import org.axonframework.common.ReflectionUtils;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.axonframework.eventstreaming.StreamableEventSource;
 import org.axonframework.test.fixture.AxonTestFixture;
-import org.axonframework.test.fixture.RecordingEventStore;
 import org.axonframework.test.server.AxonServerContainerUtils;
 
 import java.io.IOException;
@@ -24,7 +20,7 @@ public class FacultyAxonTestFixture {
         var configuration = ConfigurationProperties.load();
         var configurer = application.configurer(configuration, customization);
         purgeAxonServerIfEnabled(configuration);
-        return AxonTestFixture.with(configurer, c -> c.axonServerEnabled(configuration.axonServerEnabled()));
+        return AxonTestFixture.with(configurer, c -> configuration.axonServerEnabled() ? c : c.disableAxonServer());
     }
 
     private static void purgeAxonServerIfEnabled(ConfigurationProperties configuration) {

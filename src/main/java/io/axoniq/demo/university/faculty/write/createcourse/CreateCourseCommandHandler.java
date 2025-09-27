@@ -2,15 +2,19 @@ package io.axoniq.demo.university.faculty.write.createcourse;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
+import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
 import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
 import org.axonframework.eventsourcing.annotations.EventSourcedEntity;
 import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
 import org.axonframework.modelling.annotations.InjectEntity;
+import org.axonframework.spring.stereotype.EventSourced;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 class CreateCourseCommandHandler {
 
     @CommandHandler
@@ -30,7 +34,7 @@ class CreateCourseCommandHandler {
         return List.of(new CourseCreated(command.courseId(), command.name(), command.capacity()));
     }
 
-    @EventSourcedEntity(tagKey = FacultyTags.COURSE_ID)
+    @EventSourced(idType = CourseId.class, tagKey = FacultyTags.COURSE_ID)
     static final class State {
 
         private boolean created;

@@ -3,15 +3,19 @@ package io.axoniq.demo.university.faculty.write.renamecourse;
 import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
+import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
 import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
 import org.axonframework.eventsourcing.annotations.EventSourcedEntity;
 import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
 import org.axonframework.modelling.annotations.InjectEntity;
+import org.axonframework.spring.stereotype.EventSourced;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 class RenameCourseCommandHandler {
 
     @CommandHandler
@@ -34,8 +38,8 @@ class RenameCourseCommandHandler {
         return List.of(new CourseRenamed(command.courseId(), command.name()));
     }
 
-    @EventSourcedEntity(tagKey = FacultyTags.COURSE_ID)
-    record State(
+    @EventSourced(idType = CourseId.class, tagKey = FacultyTags.COURSE_ID)
+    public record State(
             boolean created,
             String name
     ) {

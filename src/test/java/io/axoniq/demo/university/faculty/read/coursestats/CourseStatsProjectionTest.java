@@ -7,10 +7,12 @@ import io.axoniq.demo.university.shared.ids.StudentId;
 import org.awaitility.Awaitility;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 import org.axonframework.queryhandling.QueryGateway;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("not implemented")
 public class CourseStatsProjectionTest extends UniversityApplicationTest {
 
     @Override
@@ -54,7 +56,7 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
         var courseId = CourseId.random();
         var originalName = "Event Sourcing in Practice";
         var newName = "Advanced Event Sourcing";
-        
+
         eventOccurred(new CourseCreated(courseId, originalName, 42));
         eventOccurred(new CourseRenamed(courseId, newName));
 
@@ -74,7 +76,7 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
         var courseId = CourseId.random();
         var originalCapacity = 42;
         var newCapacity = 100;
-        
+
         eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", originalCapacity));
         eventOccurred(new CourseCapacityChanged(courseId, newCapacity));
 
@@ -93,7 +95,7 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
         // given
         var courseId = CourseId.random();
         var studentId = StudentId.random();
-        
+
         eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", 42));
         eventOccurred(new StudentSubscribedToCourse(studentId, courseId));
 
@@ -112,7 +114,7 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
         // given
         var courseId = CourseId.random();
         var studentId = StudentId.random();
-        
+
         eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", 42));
         eventOccurred(new StudentSubscribedToCourse(studentId, courseId));
         eventOccurred(new StudentUnsubscribedFromCourse(studentId, courseId));

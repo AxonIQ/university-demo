@@ -17,56 +17,57 @@ import org.axonframework.modelling.StateManager;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+
 class CreateCourseCommandHandler implements CommandHandler {
 
-    private final MessageConverter messageConverter;
-    private final MessageTypeResolver messageTypeResolver;
+  private final MessageConverter messageConverter;
+  private final MessageTypeResolver messageTypeResolver;
 
-    CreateCourseCommandHandler(MessageConverter messageConverter, MessageTypeResolver messageTypeResolver) {
-        this.messageConverter = messageConverter;
-        this.messageTypeResolver = messageTypeResolver;
+  CreateCourseCommandHandler(MessageConverter messageConverter, MessageTypeResolver messageTypeResolver) {
+    this.messageConverter = messageConverter;
+    this.messageTypeResolver = messageTypeResolver;
+  }
+
+  @Override
+  @Nonnull
+  public MessageStream.Single<CommandResultMessage> handle(
+    @Nonnull CommandMessage command,
+    @Nonnull ProcessingContext context
+  ) {
+    var eventAppender = EventAppender.forContext(context);
+    var payload = command.payloadAs(CreateCourse.class, messageConverter);
+    var state = context.component(StateManager.class);
+    CompletableFuture<CommandResultMessage> decideFuture = state
+      .loadEntity(State.class, payload.courseId(), context)
+      .thenApply(entity -> decide(payload, entity))
+      .thenAccept(eventAppender::append)
+      .thenApply(r -> new GenericCommandResultMessage(messageTypeResolver.resolveOrThrow(CommandResult.class),
+        new CommandResult(payload.courseId().toString())));
+    return MessageStream.fromFuture(decideFuture).cast();
+  }
+
+  private List<CourseCreated> decide(CreateCourse command, State state) {
+    if (state.created) {
+      return List.of();
+    }
+    return List.of(new CourseCreated(command.courseId(), command.name(), command.capacity()));
+  }
+
+  static final class State {
+
+    private boolean created;
+
+    private State(boolean created) {
+      this.created = created;
     }
 
-    @Override
-    @Nonnull
-    public MessageStream.Single<CommandResultMessage> handle(
-            @Nonnull CommandMessage command,
-            @Nonnull ProcessingContext context
-    ) {
-        var eventAppender = EventAppender.forContext(context);
-        var payload = command.payloadAs(CreateCourse.class, messageConverter);
-        var state = context.component(StateManager.class);
-        CompletableFuture<CommandResultMessage> decideFuture = state
-                .loadEntity(State.class, payload.courseId(), context)
-                .thenApply(entity -> decide(payload, entity))
-                .thenAccept(eventAppender::append)
-                .thenApply(r -> new GenericCommandResultMessage(messageTypeResolver.resolveOrThrow(CommandResult.class),
-                                                                  new CommandResult(payload.courseId().toString())));
-        return MessageStream.fromFuture(decideFuture);
+    static State initial() {
+      return new State(false);
     }
 
-    private List<CourseCreated> decide(CreateCourse command, State state) {
-        if (state.created) {
-            return List.of();
-        }
-        return List.of(new CourseCreated(command.courseId(), command.name(), command.capacity()));
+    State evolve(CourseCreated event) {
+      this.created = true;
+      return this;
     }
-
-    static final class State {
-
-        private boolean created;
-
-        private State(boolean created) {
-            this.created = created;
-        }
-
-        static State initial() {
-            return new State(false);
-        }
-
-        State evolve(CourseCreated event) {
-            this.created = true;
-            return this;
-        }
-    }
+  }
 }

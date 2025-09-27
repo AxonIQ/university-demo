@@ -4,7 +4,9 @@ import io.axoniq.demo.university.faculty.events.*;
 import org.axonframework.eventhandling.annotations.EventHandler;
 import org.axonframework.eventhandling.annotations.SequencingPolicy;
 import org.axonframework.eventhandling.sequencing.PropertySequencingPolicy;
+import org.springframework.stereotype.Component;
 
+@Component
 @SequencingPolicy(type = PropertySequencingPolicy.class, parameters = {"courseId"})
 class CoursesStatsProjection {
 

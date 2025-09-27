@@ -21,8 +21,9 @@ public class AllCoursesFullyBookedNotifierConfiguration {
                 .eventHandlingComponents(
                         c -> c.annotated(cfg -> new WhenAllCoursesFullyBookedThenSendNotification.AutomationEventHandler())
                 )
-                // Due to a minor bug in the InMemoryEventStorageEngine this customization is needed if you want to use the implementation in the tests
-                .customized((c, cus) -> cus.initialToken(s -> CompletableFuture.completedFuture(new GlobalSequenceTrackingToken(0))));
+                // Due to the InMemoryEventStore bug the customization is needed if you want to use the implementation in the tests
+                .customized((c, cus) -> cus.initialToken(s -> CompletableFuture.completedFuture(new GlobalSequenceTrackingToken(0))))
+          .build();
 
         var commandHandlingModule = CommandHandlingModule.named("SendAllCoursesFullyBookedCommandHandler")
                 .commandHandlers()
@@ -30,7 +31,7 @@ public class AllCoursesFullyBookedNotifierConfiguration {
                 .build();
 
         return configurer
-                .registerEntity(automationState)
+                .componentRegistry(cr -> cr.registerModule(automationState))
                 .registerCommandHandlingModule(commandHandlingModule)
                 .modelling(modelling -> modelling.messaging(messaging -> messaging.eventProcessing(eventProcessing ->
                         eventProcessing.pooledStreaming(ps -> ps.processor(automationProcessor))

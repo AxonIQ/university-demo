@@ -15,8 +15,8 @@ import org.axonframework.eventstreaming.Tag;
 import org.axonframework.messaging.Message;
 import org.axonframework.messaging.conversion.MessageConverter;
 import org.axonframework.messaging.unitofwork.ProcessingContext;
+import org.axonframework.modelling.EntityIdResolver;
 import org.axonframework.modelling.annotations.InjectEntity;
-import org.axonframework.modelling.command.EntityIdResolver;
 
 import java.util.List;
 

@@ -44,12 +44,12 @@ public class WhenAllCoursesFullyBookedThenSendNotificationAxonFixtureTest {
 
         fixture.given()
                 .events(
-                        new CourseCreated(courseId1, "Course 1", 2),
-                        new CourseCreated(courseId2, "Course 2", 2),
-                        new StudentSubscribedToCourse(studentId1, courseId1),
+                        new CourseCreated(courseId1, "Course 1", 2), // Create course with capacity 2
+                        new CourseCreated(courseId2, "Course 2", 2), // Create course with capacity 2
+                        new StudentSubscribedToCourse(studentId1, courseId1), // Fill first course
                         new StudentSubscribedToCourse(studentId2, courseId1),
-                        new StudentSubscribedToCourse(studentId1, courseId2),
-                        new StudentSubscribedToCourse(studentId2, courseId2)
+                        new StudentSubscribedToCourse(studentId1, courseId2), // Fill second course
+                        new StudentSubscribedToCourse(studentId2, courseId2)  // This should trigger notification
                 )
                 .then()
                 .await(r -> r.expect(cfg -> assertNotificationSent(cfg, expectedNotification)));

@@ -1,6 +1,6 @@
 services:
   axon-server:
-    image: axoniq/axonserver:2025.2.0-SNAPSHOT
+    image: axoniq/axonserver:2025.2.0-EAP2-nonroot
     ports:
       - "8024:8024"
       - "8124:8124"

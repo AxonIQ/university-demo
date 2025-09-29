@@ -85,7 +85,8 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", originalCapacity), new CourseCapacityChanged(courseId, newCapacity))
+                .events(new CourseCreated(courseId, "Event Sourcing in Practice", originalCapacity),
+                        new CourseCapacityChanged(courseId, newCapacity))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }
@@ -103,7 +104,8 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", 42), new StudentSubscribedToCourse(studentId, courseId))
+                .events(new CourseCreated(courseId, "Event Sourcing in Practice", 42),
+                        new StudentSubscribedToCourse(studentId, courseId))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }

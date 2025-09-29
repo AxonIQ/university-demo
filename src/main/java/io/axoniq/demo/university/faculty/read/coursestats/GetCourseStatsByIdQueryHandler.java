@@ -10,7 +10,7 @@ public record GetCourseStatsByIdQueryHandler(
     GetCourseStatsById.Result handle(GetCourseStatsById query) {
         return repository.findById(query.courseId())
                 .map(GetCourseStatsById.Result::new)
-                .orElseGet(() -> new GetCourseStatsById.Result(null));
+                .orElse(null);
     }
 
 }

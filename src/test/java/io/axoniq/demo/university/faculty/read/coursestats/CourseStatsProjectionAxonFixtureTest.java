@@ -141,9 +141,9 @@ public class CourseStatsProjectionAxonFixtureTest {
 
     private void assertCourseStatsNotExist(Configuration configuration, CourseId courseId) {
         var found = configuration.getComponent(QueryGateway.class)
-                .query(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null)
-                .join();
-        assertThat(found.stats()).isNull();
+                .query(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null);
+        var result = found.join();
+        assertThat(result.stats()).isNull();
     }
 
 }

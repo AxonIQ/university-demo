@@ -12,6 +12,7 @@
         <assertj.version>3.27.3</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>
         <axon.version>5.0.0-preview</axon.version>
+        <axon-postgresql.version>0.1.0</axon-postgresql.version>
         <hamcrest.version>3.0</hamcrest.version>
         <junit.version>5.12.1</junit.version>
         <jackson.version>2.20.0</jackson.version>
@@ -59,6 +60,11 @@
             <groupId>org.axonframework</groupId>
             <artifactId>axon-server-connector</artifactId>
             <version>${axon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.axoniq.framework</groupId>
+            <artifactId>postgresql-core</artifactId>
+            <version>${axon-postgresql.version}</version>
         </dependency>
 
         <!-- Serialization Dependencies -->

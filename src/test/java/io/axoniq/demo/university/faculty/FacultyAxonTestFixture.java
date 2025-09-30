@@ -20,12 +20,12 @@ public class FacultyAxonTestFixture {
         var configuration = ConfigurationProperties.load();
         var configurer = application.configurer(configuration, customization);
         purgeAxonServerIfEnabled(configuration);
-        return AxonTestFixture.with(configurer, c -> configuration.axonServerEnabled() ? c : c.disableAxonServer());
+        return AxonTestFixture.with(configurer, c -> configuration.isAxonServerEventStorageEngine() ? c : c.disableAxonServer());
     }
 
     private static void purgeAxonServerIfEnabled(ConfigurationProperties configuration) {
-        boolean axonServerEnabled = configuration.axonServerEnabled();
-        if (axonServerEnabled) {
+        boolean useAxonServer = configuration.isAxonServerEventStorageEngine();
+        if (useAxonServer) {
             try {
                 AxonServerContainerUtils.purgeEventsFromAxonServer("localhost", 8024, "university", true);
             } catch (IOException e) {

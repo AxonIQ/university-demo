@@ -20,7 +20,7 @@ services:
     ports:
       - "5444:5444"
     volumes:
-      - ./volumes/postgres-axon:/var/lib/postgresql/data
+      - ./volumes/postgres-axon:/var/lib/postgresql/18/docker
     command: -p 5444
 
 volumes:

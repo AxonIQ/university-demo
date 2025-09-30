@@ -74,9 +74,9 @@ public class UniversityAxonApplication {
             config.setJdbcUrl("jdbc:postgresql://localhost:5444/university_demo_db");
             config.setUsername("university_demo_user");
             config.setPassword("university_demo_password");
-//            config.setMaximumPoolSize(5);
-//            config.setMinimumIdle(1);
-//            config.setAutoCommit(false);
+            config.setAutoCommit(false);
+            config.setMaximumPoolSize(5);
+            config.setMinimumIdle(1);
 
             configurer.registerEventStorageEngine(cr ->
                     new PostgresqlEventStorageEngine(

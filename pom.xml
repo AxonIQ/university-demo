@@ -21,6 +21,9 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <axon-postgresql.version>0.1.0</axon-postgresql.version>
+        <postgresql.version>42.7.8</postgresql.version>
+        <hikari-cp.version>7.0.2</hikari-cp.version>
     </properties>
 
     <dependencies>
@@ -59,6 +62,22 @@
             <groupId>org.axonframework</groupId>
             <artifactId>axon-server-connector</artifactId>
             <version>${axon.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.axoniq.framework</groupId>
+            <artifactId>postgresql-core</artifactId>
+            <version>${axon-postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikari-cp.version}</version>
         </dependency>
 
         <!-- Serialization Dependencies -->

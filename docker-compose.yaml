@@ -9,8 +9,19 @@ services:
       axoniq_axonserver_autocluster_first: axon-server
       axoniq_axonserver_autocluster_contexts: _admin
     volumes:
-      - data:/axonserver/data
-      - events:/axonserver/events
+      - ./volumes/axonserver-data:/axonserver/data
+      - ./volumes/axonserver-events:/axonserver/events
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: university_demo_db
+      POSTGRES_USER: university_demo_user
+      POSTGRES_PASSWORD: university_demo_password
+    ports:
+      - "5444:5444"
+    volumes:
+      - ./volumes/postgres-axon:/var/lib/postgresql/18/docker
+    command: -p 5444
 
 volumes:
   db:

@@ -9,7 +9,8 @@ import java.util.logging.Logger;
 public class ConfigurationProperties {
     private static final Logger logger = Logger.getLogger(ConfigurationProperties.class.getName());
 
-    boolean axonServerEnabled = true;
+    // Possible values: "in-memory", "axonserver", "postgres"
+    private String eventStorageEngine = "axonserver";
 
     public static ConfigurationProperties defaults() {
         return new ConfigurationProperties();
@@ -21,9 +22,9 @@ public class ConfigurationProperties {
         Properties properties = loadPropertiesFile("application.properties");
 
         if (properties != null) {
-            String axonServerEnabled = properties.getProperty("axon.server.enabled");
-            if (axonServerEnabled != null) {
-                props.axonServerEnabled = Boolean.parseBoolean(axonServerEnabled);
+            String engine = properties.getProperty("axon.event-storage.engine");
+            if (engine != null && !engine.isBlank()) {
+                props.eventStorageEngine = engine.trim();
             }
         } else {
             logger.info("No properties file found, using default configuration");
@@ -46,12 +47,20 @@ public class ConfigurationProperties {
         return null;
     }
 
-    public boolean axonServerEnabled() {
-        return axonServerEnabled;
+    public String eventStorageEngine() {
+        return eventStorageEngine;
     }
 
-    public ConfigurationProperties axonServerEnabled(boolean axonServerEnabled) {
-        this.axonServerEnabled = axonServerEnabled;
+    public ConfigurationProperties eventStorageEngine(String eventStorageEngine) {
+        this.eventStorageEngine = eventStorageEngine;
         return this;
+    }
+
+    public boolean isAxonServerEventStorageEngine() {
+        return "axonserver".equalsIgnoreCase(eventStorageEngine);
+    }
+
+    public boolean isPostgresEventStorageEngine() {
+        return "postgres".equalsIgnoreCase(eventStorageEngine);
     }
 }

@@ -36,6 +36,7 @@ class SubscribeStudentToCourseAxonFixtureTest {
                 .when()
                 .command(new SubscribeStudentToCourse(studentId, courseId))
                 .then()
+                .success()
                 .events(new StudentSubscribedToCourse(studentId, courseId));
     }
 

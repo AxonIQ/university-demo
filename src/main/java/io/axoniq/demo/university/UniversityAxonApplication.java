@@ -1,14 +1,20 @@
 package io.axoniq.demo.university;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
+import io.axoniq.framework.postgresql.DataSourceConnectionExecutor;
+import io.axoniq.framework.postgresql.PostgresqlEventStorageEngine;
 import org.axonframework.axonserver.connector.AxonServerConfiguration;
 import org.axonframework.axonserver.connector.AxonServerConfigurationEnhancer;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.AxonConfiguration;
+import org.axonframework.eventhandling.conversion.DelegatingEventConverter;
+import org.axonframework.eventhandling.conversion.EventConverter;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
 
 import java.util.function.UnaryOperator;
@@ -53,7 +59,7 @@ public class UniversityAxonApplication {
             UnaryOperator<EventSourcingConfigurer> customization
     ) {
         var configurer = EventSourcingConfigurer.create();
-        if (configProps.axonServerEnabled) {
+        if (configProps.isAxonServerEventStorageEngine()) {
             configurer.componentRegistry(r -> r.registerComponent(AxonServerConfiguration.class, c -> {
                 var axonServerConfig = new AxonServerConfiguration();
                 axonServerConfig.setContext(CONTEXT);
@@ -61,6 +67,23 @@ public class UniversityAxonApplication {
             }));
         } else {
             configurer.componentRegistry(r -> r.disableEnhancer(AxonServerConfigurationEnhancer.class));
+        }
+        if (configProps.isPostgresEventStorageEngine()) {
+            HikariConfig config = new HikariConfig();
+
+            config.setJdbcUrl("jdbc:postgresql://localhost:5444/university_demo_db");
+            config.setUsername("university_demo_user");
+            config.setPassword("university_demo_password");
+            config.setAutoCommit(false);
+            config.setMaximumPoolSize(5);
+            config.setMinimumIdle(1);
+
+            configurer.registerEventStorageEngine(cr ->
+                    new PostgresqlEventStorageEngine(
+                            new DataSourceConnectionExecutor(new HikariDataSource(config)),
+                            cr.getComponent(EventConverter.class)
+                    )
+            );
         }
         configurer = customization.apply(configurer);
         return configurer;

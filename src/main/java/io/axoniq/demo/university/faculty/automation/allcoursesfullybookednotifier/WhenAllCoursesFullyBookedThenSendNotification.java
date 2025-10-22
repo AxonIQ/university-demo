@@ -1,8 +1,9 @@
 package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
-import io.axoniq.demo.university.shared.application.notifier.NotificationService;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.*;
+import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.commandhandling.gateway.CommandDispatcher;
@@ -33,9 +34,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class WhenAllCoursesFullyBookedThenSendNotification {
 
-    private static final String FACULTY_ID = "ONLY_FACULTY_ID";
-
-    @EventSourcedEntity
+    @EventSourcedEntity(tagKey = FacultyTags.FACULTY_ID)
     record State(Map<CourseId, Course> courses, boolean notified) {
 
         record Course(int capacity, int students) {
@@ -66,31 +65,39 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @EventSourcingHandler
         State evolve(CourseCreated event) {
             courses.put(event.courseId(), new Course(event.capacity(), 0));
-            return new State(courses, notified);
+            return new State(courses, isNotified());
         }
 
         @EventSourcingHandler
         State evolve(CourseCapacityChanged event) {
             courses.computeIfPresent(event.courseId(), (id, course) -> course.capacity(event.capacity()));
-            return new State(courses, notified);
+            return new State(courses, isNotified());
         }
 
         @EventSourcingHandler
         State evolve(StudentSubscribedToCourse event) {
             courses.computeIfPresent(event.courseId(), (id, course) -> course.studentSubscribed());
-            return new State(courses, notified);
+            return new State(courses, isNotified());
         }
 
         @EventSourcingHandler
         State evolve(StudentUnsubscribedFromCourse event) {
             courses.computeIfPresent(event.courseId(), (id, course) -> course.studentUnsubscribed());
-            return new State(courses, notified);
+            return new State(courses, isNotified());
         }
 
         @EventSourcingHandler
         State evolve(AllCoursesFullyBookedNotificationSent event) {
             return new State(courses, true);
         }
+
+        private boolean isNotified() {
+            if (courses.values().stream().allMatch(State.Course::isFullyBooked)) {
+                return notified;
+            }
+            return false;
+        }
+
     }
 
     static class AutomationCommandHandler {
@@ -119,7 +126,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
                 CommandDispatcher commandDispatcher,
                 ProcessingContext context
         ) {
-            var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
+            var state = context.component(StateManager.class).loadEntity(State.class, Ids.FACULTY_ID, context).join();
             return sendNotificationIfAllCoursesFullyBooked(state, commandDispatcher);
         }
 
@@ -129,7 +136,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
                 CommandDispatcher commandDispatcher,
                 ProcessingContext context
         ) {
-            var state = context.component(StateManager.class).loadEntity(State.class, FACULTY_ID, context).join();
+            var state = context.component(StateManager.class).loadEntity(State.class, Ids.FACULTY_ID, context).join();
             return sendNotificationIfAllCoursesFullyBooked(state, commandDispatcher);
         }
 
@@ -143,7 +150,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
             if (!shouldNotify) {
                 return CompletableFuture.completedFuture(null);
             }
-            return commandDispatcher.send(new SendAllCoursesFullyBookedNotification(FACULTY_ID), Object.class);
+            return commandDispatcher.send(new SendAllCoursesFullyBookedNotification(Ids.FACULTY_ID), Object.class);
         }
 
     }

@@ -1,5 +1,6 @@
 package io.axoniq.demo.university.faculty.write.enrollstudent;
 
+import io.axoniq.demo.university.faculty.FacultyTags;
 import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.StudentEnrolledInFaculty;
 import org.axonframework.commandhandling.annotations.CommandHandler;
@@ -11,7 +12,7 @@ import org.axonframework.modelling.annotations.InjectEntity;
 
 public class EnrollStudentInFacultyCommandHandler {
 
-    @EventSourcedEntity
+    @EventSourcedEntity(tagKey = FacultyTags.STUDENT_ID)
     public static class Student {
 
         private boolean exists;

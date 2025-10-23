@@ -1,7 +1,9 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
 import org.axonframework.queryhandling.annotations.QueryHandler;
+import org.springframework.stereotype.Component;
 
+@Component
 public record GetCourseStatsByIdQueryHandler(
         CourseStatsRepository repository
 ) {

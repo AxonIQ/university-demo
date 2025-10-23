@@ -4,6 +4,8 @@ import io.axoniq.demo.university.faculty.events.*;
 import org.axonframework.eventhandling.annotations.EventHandler;
 import org.axonframework.eventhandling.annotations.SequencingPolicy;
 import org.axonframework.eventhandling.sequencing.PropertySequencingPolicy;
+import org.axonframework.messaging.unitofwork.ProcessingContext;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 
 @SequencingPolicy(type = PropertySequencingPolicy.class, parameters = {"courseId"})
 class CoursesStatsProjection {
@@ -15,7 +17,7 @@ class CoursesStatsProjection {
     }
 
     @EventHandler
-    void handle(CourseCreated event) {
+    void handle(CourseCreated event, ProcessingContext processingContext) {
         CoursesStatsReadModel readModel = new CoursesStatsReadModel(
                 event.courseId(),
                 event.name(),
@@ -23,6 +25,8 @@ class CoursesStatsProjection {
                 0
         );
         repository.save(readModel);
+        QueryUpdateEmitter.forContext(processingContext)
+                .emit(GetCourseStatsById.class, query -> query.courseId().equals(event.courseId()), new GetCourseStatsById.Result(readModel));
     }
 
     @EventHandler

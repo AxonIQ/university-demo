@@ -11,11 +11,12 @@
     <properties>
         <assertj.version>3.27.3</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <axon.version>5.0.0-RC1</axon.version>
+        <axon.version>5.0.0-SNAPSHOT</axon.version>
         <hamcrest.version>3.0</hamcrest.version>
         <junit.version>5.12.1</junit.version>
         <jackson.version>2.20.0</jackson.version>
         <log4j.version>2.24.3</log4j.version>
+        <projectreactor.version>3.7.11</projectreactor.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
@@ -51,6 +52,12 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
             <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>${projectreactor.version}</version>
         </dependency>
 
         <!-- Event Store Dependencies -->

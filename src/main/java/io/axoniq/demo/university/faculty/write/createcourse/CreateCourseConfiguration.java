@@ -16,16 +16,16 @@ public class CreateCourseConfiguration {
                 .named("CreateCourse")
                 .commandHandlers()
                 .annotatedCommandHandlingComponent(c -> new CreateCourseCommandHandler());
-//
-//        var courseNameUniqueNameSetValidation = EventProcessorModule
-//                .subscribing("CourseNameUniqueNameSetValidation")
-//                .eventHandlingComponents(eh -> eh.annotated(cfg -> new CourseUniqueNameSetValidation()))
-//                .notCustomized();
+
+        var courseNameUniqueNameSetValidation = EventProcessorModule
+                .subscribing("CourseNameUniqueNameSetValidation")
+                .eventHandlingComponents(eh -> eh.annotated(cfg -> new CourseUniqueNameSetValidation()))
+                .notCustomized();
 
         return configurer
                 .registerEntity(stateEntity)
-                .registerCommandHandlingModule(commandHandlingModule);
-//                .messaging(ms -> ms.eventProcessing(ep -> ep.subscribing(s -> s.processor(courseNameUniqueNameSetValidation))));
+                .registerCommandHandlingModule(commandHandlingModule)
+                .messaging(ms -> ms.eventProcessing(ep -> ep.subscribing(s -> s.processor(courseNameUniqueNameSetValidation))));
     }
 
     private CreateCourseConfiguration() {

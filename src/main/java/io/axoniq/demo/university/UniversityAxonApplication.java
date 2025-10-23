@@ -1,7 +1,6 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
-import io.axoniq.demo.university.faculty.read.coursestats.GetCourseStatsById;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
@@ -11,11 +10,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.axonframework.queryhandling.QueryGateway;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,33 +69,6 @@ public class UniversityAxonApplication {
     private static void executeSampleCommands(AxonConfiguration configuration) {
         try {
             var courseId = CourseId.random();
-
-            var countDownLatch = new CountDownLatch(1);
-            var queryGateway = configuration.getComponent(QueryGateway.class);
-            queryGateway.subscriptionQuery(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null)
-                    .subscribe(new Subscriber<GetCourseStatsById.Result>() {
-                        @Override
-                        public void onSubscribe(Subscription s) {
-
-                        }
-
-                        @Override
-                        public void onNext(GetCourseStatsById.Result result) {
-                            logger.info("Received course stats: " + result);
-                            countDownLatch.countDown();
-                        }
-
-                        @Override
-                        public void onError(Throwable t) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
-
             var createCourse = new CreateCourse(courseId, "Event Sourcing in Practice", 3);
             var renameCourse = new RenameCourse(courseId, "Advanced Event Sourcing");
 
@@ -108,7 +76,6 @@ public class UniversityAxonApplication {
             commandGateway.sendAndWait(createCourse);
             commandGateway.sendAndWait(renameCourse);
             logger.info("Successfully executed sample commands");
-            countDownLatch.await();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error while executing sample commands: " + e.getMessage(), e);
         }

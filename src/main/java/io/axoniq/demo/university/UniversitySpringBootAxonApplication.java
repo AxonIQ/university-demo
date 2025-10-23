@@ -14,13 +14,17 @@ import org.axonframework.eventhandling.processors.streaming.token.store.TokenSto
 import org.axonframework.eventhandling.processors.streaming.token.store.inmemory.InMemoryTokenStore;
 import org.axonframework.extension.spring.config.SpringComponentRegistry;
 import org.axonframework.queryhandling.QueryGateway;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,36 +57,81 @@ public class UniversitySpringBootAxonApplication {
 
         @Override
         public void run(ApplicationArguments args) throws Exception {
-            try {
-                var courseId = CourseId.random();
-                var createCourse = new CreateCourse(courseId, "Event Sourcing in Practice", 3);
-                var renameCourse = new RenameCourse(courseId, "Advanced Event Sourcing");
-                var studentId = StudentId.random();
-                var enrollStudent = new EnrollStudent(studentId, "Kermit", "The Frog");
-                var commandGateway = ((SpringComponentRegistry) this.componentRegistry).configuration().getComponent(CommandGateway.class);
-
-                commandGateway.sendAndWait(createCourse);
-                commandGateway.sendAndWait(renameCourse);
-                commandGateway.sendAndWait(enrollStudent);
-
-                logger.info("Successfully executed sample commands");
-
-                Thread.sleep(1000);
-                var queryGateway = ((SpringComponentRegistry) this.componentRegistry).configuration().getComponent(QueryGateway.class);
-
-                var found = queryGateway
-                        .query(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null)
-                        .join();
-                logger.info("Found: " + found);
-
-//                var subscription = queryGateway
-//                        .subscriptionQuery(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null);
-//                subscription.subscribe(r -> logger.log(s));
-
-
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error while executing sample commands: " + e.getMessage(), e);
-            }
+//            try {
+//                var courseId = CourseId.random();
+//                logger.info("=".repeat(80));
+//                logger.info("Open browser at: http://localhost:8080/course-stats-demo.html");
+//                logger.info("=".repeat(80));
+//
+//                var commandGateway = ((SpringComponentRegistry) this.componentRegistry).configuration().getComponent(CommandGateway.class);
+//
+//                var queryGateway = ((SpringComponentRegistry) this.componentRegistry).configuration().getComponent(QueryGateway.class);
+//
+//                var countDownLatch = new CountDownLatch(3);
+//
+//                var queryResult = queryGateway
+//                        .subscriptionQuery(
+//                                new GetCourseStatsById(courseId),
+//                                GetCourseStatsById.Result.class,
+//                                null
+//                        );
+//
+//                // Subscribe to the initial result
+//                queryResult.subscribe(
+//                        new Subscriber<GetCourseStatsById.Result>() {
+//                            @Override
+//                            public void onSubscribe(Subscription s) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onNext(GetCourseStatsById.Result result) {
+//                                logger.info("Initial result received: " + result);
+//                                countDownLatch.countDown();
+//                            }
+//
+//                            @Override
+//                            public void onError(Throwable t) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onComplete() {
+//
+//                            }
+//                        }
+//                );
+//
+//                var createCourse = new CreateCourse(courseId, "Event Sourcing in Practice", 3);
+//                var renameCourse = new RenameCourse(courseId, "Advanced Event Sourcing");
+//                var studentId = StudentId.random();
+//                var enrollStudent = new EnrollStudent(studentId, "Kermit", "The Frog");
+//
+//                commandGateway.sendAndWait(createCourse);
+//                commandGateway.sendAndWait(renameCourse);
+//                commandGateway.sendAndWait(enrollStudent);
+//
+//                logger.info("Successfully executed sample commands");
+//
+//                Thread.sleep(1000);
+//
+//                var found = queryGateway
+//                        .query(new GetCourseStatsById(courseId), GetCourseStatsById.Result.class, null)
+//                        .join();
+//                logger.info("Found: " + found);
+//
+//                // Subscription Query Example - subscribes to initial result and future updates
+//                logger.info("Starting subscription query for course stats...");
+//
+//                // Keep subscription alive for a few seconds to demonstrate updates
+//                countDownLatch.await();
+//
+//                logger.info("Subscription closed");
+//
+//
+//            } catch (Exception e) {
+//                logger.log(Level.SEVERE, "Error while executing sample commands: " + e.getMessage(), e);
+//            }
         }
     }
 }

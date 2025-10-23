@@ -15,6 +15,7 @@
         <hamcrest.version>3.0</hamcrest.version>
         <junit.version>5.12.2</junit.version>
         <log4j.version>2.24.3</log4j.version>
+        <projectreactor.version>3.7.11</projectreactor.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
@@ -70,11 +71,11 @@
 
         <!-- Event Store Dependencies -->
 
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-server-connector</artifactId>
-            <version>${axon.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.axonframework</groupId>-->
+<!--            <artifactId>axon-server-connector</artifactId>-->
+<!--            <version>${axon.version}</version>-->
+<!--        </dependency>-->
 
         <!-- Log4j Dependencies -->
         <dependency>

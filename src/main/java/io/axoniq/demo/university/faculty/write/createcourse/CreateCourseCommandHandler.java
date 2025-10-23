@@ -6,10 +6,9 @@ import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
 import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
-import org.axonframework.eventsourcing.annotations.EventSourcedEntity;
 import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
+import org.axonframework.extension.spring.stereotype.EventSourced;
 import org.axonframework.modelling.annotations.InjectEntity;
-import org.axonframework.spring.stereotype.EventSourced;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,37 +16,37 @@ import java.util.List;
 @Component
 class CreateCourseCommandHandler {
 
-    @CommandHandler
-    void handle(
-            CreateCourse command,
-            @InjectEntity(idProperty = FacultyTags.COURSE_ID) State state,
-            EventAppender eventAppender
-    ) {
-        var events = decide(command, state);
-        eventAppender.append(events);
+  @CommandHandler
+  void handle(
+    CreateCourse command,
+    @InjectEntity(idProperty = FacultyTags.COURSE_ID) State state,
+    EventAppender eventAppender
+  ) {
+    var events = decide(command, state);
+    eventAppender.append(events);
+  }
+
+  private List<CourseCreated> decide(CreateCourse command, State state) {
+    if (state.created) {
+      return List.of();
+    }
+    return List.of(new CourseCreated(command.courseId(), command.name(), command.capacity()));
+  }
+
+  @EventSourced(idType = CourseId.class, tagKey = FacultyTags.COURSE_ID)
+  static final class State {
+
+    private boolean created;
+
+    @EntityCreator
+    private State() {
+      this.created = false;
     }
 
-    private List<CourseCreated> decide(CreateCourse command, State state) {
-        if (state.created) {
-            return List.of();
-        }
-        return List.of(new CourseCreated(command.courseId(), command.name(), command.capacity()));
+    @EventSourcingHandler
+    private State apply(CourseCreated event) {
+      this.created = true;
+      return this;
     }
-
-    @EventSourced(idType = CourseId.class, tagKey = FacultyTags.COURSE_ID)
-    static final class State {
-
-        private boolean created;
-
-        @EntityCreator
-        private State() {
-            this.created = false;
-        }
-
-        @EventSourcingHandler
-        private State apply(CourseCreated event) {
-            this.created = true;
-            return this;
-        }
-    }
+  }
 }

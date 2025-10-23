@@ -7,7 +7,7 @@ import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
 import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
 import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
-import org.axonframework.spring.stereotype.EventSourced;
+import org.axonframework.extension.spring.stereotype.EventSourced;
 
 @EventSourced(tagKey = FacultyTags.STUDENT_ID, idType = StudentId.class)
 public class StudentAggregate {

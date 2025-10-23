@@ -11,7 +11,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.configuration.ComponentRegistry;
 import org.axonframework.eventhandling.processors.streaming.token.store.TokenStore;
 import org.axonframework.eventhandling.processors.streaming.token.store.inmemory.InMemoryTokenStore;
-import org.axonframework.spring.config.SpringComponentRegistry;
+import org.axonframework.extension.spring.config.SpringComponentRegistry;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;

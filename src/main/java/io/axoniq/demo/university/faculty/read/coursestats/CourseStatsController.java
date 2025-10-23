@@ -67,6 +67,9 @@ public class CourseStatsController {
                 );
 
         return Flux.from(subscriptionQuery)
+                .doOnNext(it -> logger.info("Received course stats update: " + it))
+                .doOnError(it -> logger.info("Received course stats error: " + it))
+
                 .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
                         .data(result)
                         .event("course-stats-update")

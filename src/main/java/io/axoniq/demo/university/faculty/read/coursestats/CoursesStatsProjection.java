@@ -19,7 +19,7 @@ class CoursesStatsProjection {
     }
 
     @EventHandler
-    void handle(CourseCreated event, ProcessingContext processingContext) {
+    void handle(CourseCreated event, QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = new CoursesStatsReadModel(
                 event.courseId(),
                 event.name(),
@@ -27,52 +27,50 @@ class CoursesStatsProjection {
                 0
         );
         repository.save(readModel);
-        emitUpdate(processingContext, readModel);
+        emitUpdate(emitter, readModel);
     }
 
     @EventHandler
-    void handle(CourseRenamed event, ProcessingContext processingContext) {
+    void handle(CourseRenamed event,  QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.name(event.name());
         repository.save(updatedReadModel);
-        emitUpdate(processingContext, updatedReadModel);
+        emitUpdate(emitter, readModel);
     }
 
     @EventHandler
-    void handle(CourseCapacityChanged event, ProcessingContext processingContext) {
+    void handle(CourseCapacityChanged event,  QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.capacity(event.capacity());
         repository.save(updatedReadModel);
-        emitUpdate(processingContext, updatedReadModel);
+        emitUpdate(emitter, readModel);
     }
 
     @EventHandler
-    void handle(StudentSubscribedToCourse event, ProcessingContext processingContext) {
+    void handle(StudentSubscribedToCourse event,  QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.subscribedStudents(readModel.subscribedStudents() + 1);
         repository.save(updatedReadModel);
-        emitUpdate(processingContext, updatedReadModel);
+        emitUpdate(emitter, readModel);
     }
 
     @EventHandler
-    void handle(StudentUnsubscribedFromCourse event, ProcessingContext processingContext) {
+    void handle(StudentUnsubscribedFromCourse event,  QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.subscribedStudents(readModel.subscribedStudents() - 1);
         repository.save(updatedReadModel);
-        emitUpdate(processingContext, updatedReadModel);
+        emitUpdate(emitter, readModel);
     }
-
 
     /**
      * Emits an update for subscription queries when course stats change.
      * This should be called by the projection when the read model is updated.
      */
-    public void emitUpdate(ProcessingContext processingContext, CoursesStatsReadModel updatedStats) {
-        QueryUpdateEmitter.forContext(processingContext).emit(
+    public void emitUpdate(QueryUpdateEmitter emitter, CoursesStatsReadModel updatedStats) {
+        emitter.emit(
                 GetCourseStatsById.class,
                 query -> true,
                 new GetCourseStatsById.Result(updatedStats)
         );
     }
-
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 /**
@@ -70,6 +71,64 @@ public class CourseStatsController {
                 .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
                         .data(result)
                         .event("course-stats-update")
+                        .build());
+    }
+
+    /**
+     * Endpoint for getting all course stats.
+     * <p>
+     * Usage: GET /api/courses/stats
+     * <p>
+     * Returns a list of all course statistics.
+     * <p>
+     * Example with curl:
+     * curl http://localhost:8080/api/courses/stats
+     */
+    @GetMapping(value = "/stats")
+    public CompletableFuture<GetAllCourseStats.Result> getAllCourseStats() {
+        logger.info("Fetching all course stats");
+
+        GetAllCourseStats query = new GetAllCourseStats();
+        return queryGateway.query(query, GetAllCourseStats.Result.class, null);
+    }
+
+    /**
+     * Endpoint for streaming all course stats using Server-Sent Events (SSE).
+     * <p>
+     * Usage: GET /api/courses/stats/stream
+     * <p>
+     * The client will receive:
+     * 1. An initial event with all current course stats
+     * 2. Real-time update events whenever any course stats change
+     * <p>
+     * Example with curl:
+     * curl -N http://localhost:8080/api/courses/stats/stream
+     * <p>
+     * Example with JavaScript:
+     * const eventSource = new EventSource('/api/courses/stats/stream');
+     * eventSource.onmessage = (event) => {
+     *   const allStats = JSON.parse(event.data);
+     *   console.log('All course stats:', allStats);
+     * };
+     */
+    @GetMapping(value = "/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<GetAllCourseStats.Result>> streamAllCourseStats() {
+        logger.info("Client subscribed to all course stats stream");
+
+        GetAllCourseStats query = new GetAllCourseStats();
+
+        // Create subscription query
+        var subscriptionQuery =
+                queryGateway.subscriptionQuery(
+                        query,
+                        GetAllCourseStats.Result.class,
+                        null
+                );
+
+        return Flux.from(subscriptionQuery)
+                .map(result -> ServerSentEvent.<GetAllCourseStats.Result>builder()
+                        .data(result)
+                        .event("all-course-stats-update")
                         .build());
     }
 //

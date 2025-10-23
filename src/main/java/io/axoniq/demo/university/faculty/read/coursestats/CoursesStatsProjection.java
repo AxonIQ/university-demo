@@ -19,7 +19,7 @@ class CoursesStatsProjection {
     }
 
     @EventHandler
-    void handle(CourseCreated event, ProcessingContext processingContext) {
+    void handle(CourseCreated event, QueryUpdateEmitter emitter) {
         CoursesStatsReadModel readModel = new CoursesStatsReadModel(
                 event.courseId(),
                 event.name(),
@@ -27,7 +27,20 @@ class CoursesStatsProjection {
                 0
         );
         repository.save(readModel);
-        emitUpdate(processingContext, readModel);
+
+        // Emit update for single course stats subscription
+        emitter.emit(
+                GetCourseStatsById.class,
+                query -> true,
+                new GetCourseStatsById.Result(readModel)
+        );
+
+        // Emit update for all course stats subscription
+        emitter.emit(
+                GetAllCourseStats.class,
+                query -> true,
+                new GetAllCourseStats.Result(repository.findAll())
+        );
     }
 
     @EventHandler
@@ -68,10 +81,20 @@ class CoursesStatsProjection {
      * This should be called by the projection when the read model is updated.
      */
     public void emitUpdate(ProcessingContext processingContext, CoursesStatsReadModel updatedStats) {
-        QueryUpdateEmitter.forContext(processingContext).emit(
+        QueryUpdateEmitter updateEmitter = QueryUpdateEmitter.forContext(processingContext);
+
+        // Emit update for single course stats subscription
+        updateEmitter.emit(
                 GetCourseStatsById.class,
                 query -> true,
                 new GetCourseStatsById.Result(updatedStats)
+        );
+
+        // Emit update for all course stats subscription
+        updateEmitter.emit(
+                GetAllCourseStats.class,
+                query -> true,
+                new GetAllCourseStats.Result(repository.findAll())
         );
     }
 

@@ -3,6 +3,8 @@ package io.axoniq.demo.university.faculty.read.coursestats;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +22,11 @@ class InMemoryCourseStatsRepository implements CourseStatsRepository {
     @Override
     public Optional<CoursesStatsReadModel> findById(CourseId courseId) {
         return Optional.ofNullable(stats.get(courseId));
+    }
+
+    @Override
+    public List<CoursesStatsReadModel> findAll() {
+        return new ArrayList<>(stats.values());
     }
 
 }

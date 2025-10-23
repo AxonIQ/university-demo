@@ -5,13 +5,17 @@ import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.ids.CourseId;
+import io.axoniq.demo.university.shared.ids.FacultyId;
 import org.axonframework.commandhandling.annotations.CommandHandler;
 import org.axonframework.commandhandling.gateway.CommandDispatcher;
 import org.axonframework.eventhandling.annotations.EventHandler;
 import org.axonframework.eventhandling.gateway.EventAppender;
+import org.axonframework.eventsourcing.annotations.EventCriteriaBuilder;
 import org.axonframework.eventsourcing.annotations.EventSourcedEntity;
 import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
 import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
+import org.axonframework.eventstreaming.EventCriteria;
+import org.axonframework.eventstreaming.Tag;
 import org.axonframework.messaging.unitofwork.ProcessingContext;
 import org.axonframework.modelling.StateManager;
 import org.axonframework.modelling.annotations.InjectEntity;
@@ -34,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class WhenAllCoursesFullyBookedThenSendNotification {
 
-    @EventSourcedEntity(tagKey = FacultyTags.FACULTY_ID)
+    @EventSourcedEntity
     record State(Map<CourseId, Course> courses, boolean notified) {
 
         record Course(int capacity, int students) {
@@ -98,6 +102,18 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
             return false;
         }
 
+        @EventCriteriaBuilder
+        private static EventCriteria resolveCriteria(FacultyId facultyId) {
+            return EventCriteria.havingTags(Tag.of(FacultyTags.FACULTY_ID, facultyId.toString()))
+                    .andBeingOneOfTypes(
+                            CourseCreated.class.getName(),
+                            CourseCapacityChanged.class.getName(),
+                            StudentSubscribedToCourse.class.getName(),
+                            StudentUnsubscribedFromCourse.class.getName(),
+                            AllCoursesFullyBookedNotificationSent.class.getName()
+                    );
+        }
+
     }
 
     static class AutomationCommandHandler {
@@ -105,7 +121,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
         @CommandHandler
         void decide(
                 SendAllCoursesFullyBookedNotification command,
-                @InjectEntity(idProperty = FacultyTags.FACULTY_ID) State state,
+                @InjectEntity State state,
                 ProcessingContext context
         ) {
             var canNotify = state != null && !state.notified();

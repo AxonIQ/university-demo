@@ -19,14 +19,14 @@ public class EnrollStudentInFacultyFixtureTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void afterEach() {
         fixture.stop();
     }
 
     @Test
     public void givenStudentNotEnrolledInFactulty_WhenEnrollStudentInFaculty_ThenStudentEnrolledInFaculty() {
         var studentId = StudentId.random();
-        var firstName = "FirstName";
+        var firstName = "First Name";
         var lastName = "Last Name";
 
         fixture.given()
@@ -40,7 +40,7 @@ public class EnrollStudentInFacultyFixtureTest {
     @Test
     public void givenStudentEnrolledInFactulty_WhenEnrollStudentInFaculty_ThenNothing() {
         var studentId = StudentId.random();
-        var firstName = "FirstName";
+        var firstName = "First Name";
         var lastName = "Last Name";
 
         fixture.given()

@@ -1,0 +1,6 @@
+### Create course
+# @no-auto-close
+GET http://localhost:8080/api/courses/event-sourcing-1/stats/stream
+Content-Type: text/event-stream
+
+###

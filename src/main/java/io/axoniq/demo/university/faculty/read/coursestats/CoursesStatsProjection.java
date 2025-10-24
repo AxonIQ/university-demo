@@ -6,12 +6,15 @@ import org.axonframework.eventhandling.annotations.SequencingPolicy;
 import org.axonframework.eventhandling.sequencing.PropertySequencingPolicy;
 import org.axonframework.messaging.unitofwork.ProcessingContext;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 @SequencingPolicy(type = PropertySequencingPolicy.class, parameters = {"courseId"})
 class CoursesStatsProjection {
 
+    private static final Logger logger = LoggerFactory.getLogger(CoursesStatsProjection.class);
     private final CourseStatsRepository repository;
 
     public CoursesStatsProjection(CourseStatsRepository repository) {
@@ -35,7 +38,7 @@ class CoursesStatsProjection {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.name(event.name());
         repository.save(updatedReadModel);
-        emitUpdate(emitter, readModel);
+        emitUpdate(emitter, updatedReadModel);
     }
 
     @EventHandler
@@ -43,7 +46,7 @@ class CoursesStatsProjection {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.capacity(event.capacity());
         repository.save(updatedReadModel);
-        emitUpdate(emitter, readModel);
+        emitUpdate(emitter, updatedReadModel);
     }
 
     @EventHandler
@@ -51,7 +54,7 @@ class CoursesStatsProjection {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.subscribedStudents(readModel.subscribedStudents() + 1);
         repository.save(updatedReadModel);
-        emitUpdate(emitter, readModel);
+        emitUpdate(emitter, updatedReadModel);
     }
 
     @EventHandler
@@ -59,7 +62,7 @@ class CoursesStatsProjection {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.subscribedStudents(readModel.subscribedStudents() - 1);
         repository.save(updatedReadModel);
-        emitUpdate(emitter, readModel);
+        emitUpdate(emitter, updatedReadModel);
     }
 
     /**
@@ -67,9 +70,10 @@ class CoursesStatsProjection {
      * This should be called by the projection when the read model is updated.
      */
     public void emitUpdate(QueryUpdateEmitter emitter, CoursesStatsReadModel updatedStats) {
+        logger.info("Emitting updated courses stats for {}", updatedStats.courseId());
         emitter.emit(
                 GetCourseStatsById.class,
-                query -> true,
+                query -> updatedStats.courseId().equals(query.courseId()),
                 new GetCourseStatsById.Result(updatedStats)
         );
     }

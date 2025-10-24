@@ -1,0 +1,18 @@
+### Create course
+POST http://localhost:8080/api/courses
+Content-Type: application/json
+
+{
+  "courseId": "event-sourcing-1",
+  "name": "Event Sourcing 101",
+  "capacity": 25
+}
+
+### Rename course
+
+PUT http://localhost:8080/api/courses/event-sourcing-1
+Content-Type: application/json
+
+{
+  "name":"Event Sourcing {{ $random.color.name }}"
+}

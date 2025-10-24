@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.logging.Logger;
@@ -73,6 +74,32 @@ public class CourseStatsController {
                 .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
                         .data(result)
                         .event("course-stats-update")
+                        .build());
+    }
+
+    @GetMapping(value = "/stats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<GetCourseStatsById.Result> findCoursesStats() {
+        return Mono.fromFuture(queryGateway.queryMany(new FindAll(), GetCourseStatsById.Result.class, null))
+                .flatMapMany(Flux::fromIterable);
+    }
+
+        @GetMapping(value = "/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<GetCourseStatsById.Result>> streamCoursesStats() {
+
+        var subscriptionQuery =
+                queryGateway.subscriptionQuery(
+                        new FindAll(),
+                        GetCourseStatsById.Result.class,
+                        null
+                );
+
+        return Flux.from(subscriptionQuery)
+                .doOnNext(it -> logger.info("Received course stats update: " + it))
+                .doOnError(it -> logger.info("Received course stats error: " + it))
+
+                .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
+                        .data(result)
+                        .event("courses-stats-update")
                         .build());
     }
 //

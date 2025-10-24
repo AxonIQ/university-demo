@@ -1,15 +1,18 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
-import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
+import io.axoniq.demo.university.shared.ids.CourseId;
 import org.axonframework.axonserver.connector.AxonServerConfiguration;
 import org.axonframework.axonserver.connector.AxonServerConfigurationEnhancer;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.configuration.AxonConfiguration;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.monitoring.MessageMonitor;
+import org.axonframework.queryhandling.SubscriptionQueryUpdateMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -33,6 +36,33 @@ public class UniversityAxonApplication {
 
     public static AxonConfiguration startApplication(ConfigurationProperties configProps) {
         var configurer = new UniversityAxonApplication().configurer(configProps, FacultyModuleConfiguration::configure);
+
+
+        configurer.messaging(m -> {
+            m.registerSubscriptionQueryUpdateMonitor(c -> new MessageMonitor<SubscriptionQueryUpdateMessage>() {
+                @Override
+                public MonitorCallback onMessageIngested(@NotNull SubscriptionQueryUpdateMessage message) {
+                    logger.info("Received subscription query update message: " + message);
+                    return new MonitorCallback() {
+                        @Override
+                        public void reportSuccess() {
+                            logger.info("Successfully processed subscription query update message: " + message);
+                        }
+
+                        @Override
+                        public void reportFailure(Throwable cause) {
+                            logger.log(Level.SEVERE, "Failed to process subscription query update message: " + message, cause);
+                        }
+
+                        @Override
+                        public void reportIgnored() {
+                            logger.info("Ignored subscription query update message: " + message);
+                        }
+                    };
+                }
+            });
+
+        });
         var configuration = configurer.start();
         printApplicationConfiguration(configuration);
         return configuration;

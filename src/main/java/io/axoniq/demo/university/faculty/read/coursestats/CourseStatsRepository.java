@@ -2,6 +2,7 @@ package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.shared.ids.CourseId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CourseStatsRepository {
@@ -13,4 +14,5 @@ public interface CourseStatsRepository {
         return findById(courseId).orElseThrow(() -> new RuntimeException("Course with id " + courseId + " does not exist!"));
     }
 
+    List<CoursesStatsReadModel> findAll();
 }

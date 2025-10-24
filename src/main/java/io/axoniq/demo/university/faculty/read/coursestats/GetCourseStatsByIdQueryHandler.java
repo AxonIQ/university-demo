@@ -1,9 +1,9 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
-import org.axonframework.messaging.unitofwork.ProcessingContext;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.queryhandling.annotations.QueryHandler;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public record GetCourseStatsByIdQueryHandler(
@@ -16,4 +16,8 @@ public record GetCourseStatsByIdQueryHandler(
         return new GetCourseStatsById.Result(stats);
     }
 
+    @QueryHandler
+    List<GetCourseStatsById.Result> handle(FindAll query) {
+       return repository.findAll().stream().map(GetCourseStatsById.Result::new).toList();
+    }
 }

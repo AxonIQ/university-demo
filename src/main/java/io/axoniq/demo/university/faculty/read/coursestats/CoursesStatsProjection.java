@@ -72,5 +72,6 @@ class CoursesStatsProjection {
                 query -> true,
                 new GetCourseStatsById.Result(updatedStats)
         );
+        emitter.emit(FindAll.class, q -> true, new GetCourseStatsById.Result(updatedStats));
     }
 }

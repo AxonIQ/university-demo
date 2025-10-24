@@ -33,3 +33,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Docker ###
+volumes
+
+### App ###
+logs

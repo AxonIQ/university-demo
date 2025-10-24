@@ -57,7 +57,7 @@ public class ChangeCourseCapacityController {
         .build();
 
     } catch (Exception e) {
-      logger.severe("Failed to rename course: " + e.getMessage());
+      logger.severe("Failed to change course capacity: " + e.getMessage());
       return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .build();

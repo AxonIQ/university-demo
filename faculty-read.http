@@ -1,6 +1,13 @@
-### Create course
+### Get all courses
+GET http://localhost:8080/api/courses/stats
+Content-Type: application/json
+
+### Get all courses as stream
+# @no-auto-close
+GET http://localhost:8080/api/courses/stats/stream
+Content-Type: text/event-stream
+
+### Get updates of event-sourcing-1
 # @no-auto-close
 GET http://localhost:8080/api/courses/event-sourcing-1/stats/stream
 Content-Type: text/event-stream
-
-###

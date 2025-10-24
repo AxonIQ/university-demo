@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.logging.Logger;
 
 /**
@@ -23,84 +22,94 @@ import java.util.logging.Logger;
 @RequestMapping("/api/courses")
 public class CourseStatsController {
 
-    private static final Logger logger = Logger.getLogger(CourseStatsController.class.getName());
+  private static final Logger logger = Logger.getLogger(CourseStatsController.class.getName());
 
-    private final QueryGateway queryGateway;
+  private final QueryGateway queryGateway;
 
-    public CourseStatsController(QueryGateway queryGateway) {
-        this.queryGateway = queryGateway;
-    }
+  public CourseStatsController(QueryGateway queryGateway) {
+    this.queryGateway = queryGateway;
+  }
 
-    /**
-     * Endpoint for streaming course stats using Server-Sent Events (SSE).
-     * <p>
-     * Usage: GET /api/courses/{courseId}/stats/stream
-     * <p>
-     * The client will receive:
-     * 1. An initial event with the current course stats
-     * 2. Real-time update events whenever the course stats change
-     * <p>
-     * Example with curl:
-     * curl -N http://localhost:8080/api/courses/{courseId}/stats/stream
-     * <p>
-     * Example with JavaScript:
-     * const eventSource = new EventSource('/api/courses/{courseId}/stats/stream');
-     * eventSource.onmessage = (event) => {
-     * const stats = JSON.parse(event.data);
-     * console.log('Course stats:', stats);
-     * };
-     */
-    @GetMapping(value = "/{courseId}/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<GetCourseStatsById.Result>> streamCourseStats(
-            @PathVariable(name = "courseId") String courseId) {
+  /**
+   * Endpoint for retrieving all courses.
+   * <p>
+   * Usage: GET /api/courses/stats/
+   */
+  @GetMapping(value = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Flux<GetCourseStatsById.Result> getCoursesStats() {
+    return Mono.fromFuture(queryGateway.queryMany(new FindAll(), GetCourseStatsById.Result.class, null))
+      .flatMapMany(Flux::fromIterable);
+  }
 
-        logger.info("Client subscribed to course stats stream for courseId: " + courseId);
+  /**
+   * Endpoint for retrieving all courses.
+   * <p>
+   * Usage: GET /api/courses/stats/stream
+   */
+  @GetMapping(value = "/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ServerSentEvent<GetCourseStatsById.Result>> streamCoursesStats() {
 
-        CourseId id = new CourseId(courseId);
-        GetCourseStatsById query = new GetCourseStatsById(id);
+    var subscriptionQuery =
+      queryGateway.subscriptionQuery(
+        new FindAll(),
+        GetCourseStatsById.Result.class,
+        null
+      );
 
-        // Create subscription query
-        var subscriptionQuery =
-                queryGateway.subscriptionQuery(
-                        query,
-                        GetCourseStatsById.Result.class,
-                        null
-                );
+    return Flux.from(subscriptionQuery)
+      .doOnNext(it -> logger.info("Received course stats update: " + it))
+      .doOnError(it -> logger.info("Received course stats error: " + it))
 
-        return Flux.from(subscriptionQuery)
-                .doOnNext(it -> logger.info("Received course stats update: " + it))
-                .doOnError(it -> logger.info("Received course stats error: " + it))
+      .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
+        .data(result)
+        .event("courses-stats-update")
+        .build());
+  }
+  /**
+   * Endpoint for streaming course stats using Server-Sent Events (SSE).
+   * <p>
+   * Usage: GET /api/courses/{courseId}/stats/stream
+   * <p>
+   * The client will receive:
+   * 1. An initial event with the current course stats
+   * 2. Real-time update events whenever the course stats change
+   * <p>
+   * Example with curl:
+   * curl -N http://localhost:8080/api/courses/{courseId}/stats/stream
+   * <p>
+   * Example with JavaScript:
+   * const eventSource = new EventSource('/api/courses/{courseId}/stats/stream');
+   * eventSource.onmessage = (event) => {
+   * const stats = JSON.parse(event.data);
+   * console.log('Course stats:', stats);
+   * };
+   */
+  @GetMapping(value = "/{courseId}/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public Flux<ServerSentEvent<GetCourseStatsById.Result>> streamCourseStats(
+    @PathVariable(name = "courseId") String courseId) {
 
-                .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
-                        .data(result)
-                        .event("course-stats-update")
-                        .build());
-    }
+    logger.info("Client subscribed to course stats stream for courseId: " + courseId);
 
-    @GetMapping(value = "/stats", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<GetCourseStatsById.Result> findCoursesStats() {
-        return Mono.fromFuture(queryGateway.queryMany(new FindAll(), GetCourseStatsById.Result.class, null))
-                .flatMapMany(Flux::fromIterable);
-    }
+    CourseId id = new CourseId(courseId);
+    GetCourseStatsById query = new GetCourseStatsById(id);
 
-        @GetMapping(value = "/stats/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<GetCourseStatsById.Result>> streamCoursesStats() {
+    // Create subscription query
+    var subscriptionQuery =
+      queryGateway.subscriptionQuery(
+        query,
+        GetCourseStatsById.Result.class,
+        null
+      );
 
-        var subscriptionQuery =
-                queryGateway.subscriptionQuery(
-                        new FindAll(),
-                        GetCourseStatsById.Result.class,
-                        null
-                );
+    return Flux.from(subscriptionQuery)
+      .doOnNext(it -> logger.info("Received course stats update: " + it))
+      .doOnError(it -> logger.info("Received course stats error: " + it))
 
-        return Flux.from(subscriptionQuery)
-                .doOnNext(it -> logger.info("Received course stats update: " + it))
-                .doOnError(it -> logger.info("Received course stats error: " + it))
+      .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
+        .data(result)
+        .event("course-stats-update")
+        .build());
+  }
 
-                .map(result -> ServerSentEvent.<GetCourseStatsById.Result>builder()
-                        .data(result)
-                        .event("courses-stats-update")
-                        .build());
-    }
-//
+
 }

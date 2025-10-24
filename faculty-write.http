@@ -10,9 +10,18 @@ Content-Type: application/json
 
 ### Rename course
 
-PUT http://localhost:8080/api/courses/event-sourcing-1
+PUT http://localhost:8080/api/courses/event-sourcing-1/rename
 Content-Type: application/json
 
 {
   "name":"Event Sourcing {{ $random.color.name }}"
+}
+
+### Change course capacity
+
+PUT http://localhost:8080/api/courses/event-sourcing-1/capacity
+Content-Type: application/json
+
+{
+  "capacity": {{ $random.integer }}
 }

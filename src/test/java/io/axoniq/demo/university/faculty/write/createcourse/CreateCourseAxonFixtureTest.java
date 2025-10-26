@@ -62,7 +62,7 @@ class CreateCourseAxonFixtureTest {
         var capacity = 3;
 
         fixture.given()
-                .event(new CourseCreated(existingCourseId, courseName, capacity))
+                .event(new CourseCreated(Ids.FACULTY_ID, existingCourseId, courseName, capacity))
                 .when()
                 .command(new CreateCourse(newCourseId, courseName, capacity))
                 .then()

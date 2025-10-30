@@ -3,14 +3,15 @@ package io.axoniq.demo.university.faculty.read.coursestats;
 import org.axonframework.queryhandling.annotations.QueryHandler;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
-public record GetCourseStatsByIdQueryHandler(
+public record FindAllCoursesQueryHandler(
   CourseStatsRepository repository
 ) {
 
   @QueryHandler
-  CoursesQueryResult handle(GetCourseStatsById query) {
-    var stats = repository.findByIdOrThrow(query.courseId());
-    return new CoursesQueryResult(stats);
+  List<CoursesQueryResult> handle(FindAllCourses query) {
+    return repository.findAll().stream().map(CoursesQueryResult::new).toList();
   }
 }

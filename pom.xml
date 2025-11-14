@@ -14,8 +14,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <axon.version>5.0.0</axon.version>
-        <springboot.version>4.0.0-RC2</springboot.version>
+        <axon.version>5.0.1-SNAPSHOT</axon.version>
+        <springboot.version>4.0.0</springboot.version>
 
         <assertj.version>3.27.3</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>

@@ -20,13 +20,12 @@ public class WhenStudentSubscribedThenSendNotification {
     }
 
     @EventHandler
-    MessageStream.Empty<?> react(StudentSubscribedToCourse event) {
+    void react(StudentSubscribedToCourse event) {
         var notification = new NotificationService.Notification(
                 event.studentId().toString(),
                 "You have subscribed to course " + event.courseId()
         );
         notificationService.sendNotification(notification);
-        return MessageStream.empty();
     }
 
 }

@@ -1,20 +1,17 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
-import org.axonframework.eventhandling.configuration.EventProcessorModule;
-import org.axonframework.eventhandling.processors.streaming.pooled.PooledStreamingEventProcessorModule;
+import org.axonframework.messaging.eventhandling.configuration.EventProcessorModule;
+import org.axonframework.messaging.eventhandling.processing.streaming.pooled.PooledStreamingEventProcessorModule;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.axonframework.queryhandling.configuration.QueryHandlingModule;
-// import org.axonframework.queryhandling.configuration.QueryHandlingModule;
+import org.axonframework.messaging.queryhandling.configuration.QueryHandlingModule;
 
-class CourseStatsConfiguration {
-
+public class CourseStatsConfiguration {
 
     public static EventSourcingConfigurer configure(EventSourcingConfigurer configurer) {
-
         PooledStreamingEventProcessorModule projectionProcessor = EventProcessorModule
                 .pooledStreaming("Projection_CourseStats_Processor")
                 .eventHandlingComponents(
-                        c -> c.annotated(cfg -> new CoursesStatsProjection(cfg.getComponent(CourseStatsRepository.class)))
+                        c -> c.autodetected(cfg -> new CoursesStatsProjection(cfg.getComponent(CourseStatsRepository.class)))
                 ).notCustomized();
 
         QueryHandlingModule getCourseStatsByIdQueryHandler = QueryHandlingModule.named("get-course-stats-by-id")

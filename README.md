@@ -1,8 +1,10 @@
 # Axon Framework 5 - Getting Started Sample Application
-Axon version: 5.0.0-M3
+Axon version: `5.0.0-RC3`
 
 ## Getting Started Guide
 [Getting Started with Axon Framework 5](https://docs.axoniq.io/axon-framework-5-getting-started/) - there you will find a step-by-step introduction to the implementation showing how to move from Event Modeling to Vertical Slice Architecture (based on Dynamic Consistency Boundary) implementation.
+
+If you want to clone this repository to work from, feel free to use the `base` branch to start fresh.
 
 ## Event Store implementation
 
@@ -103,11 +105,11 @@ void successfulSubscription() {
     var studentId = StudentId.random();
 
     fixture.given()
-           .event(new CourseCreated(courseId.raw(), "Axon Framework 5: Getting Started", 2))
-           .event(new StudentEnrolledInFaculty(studentId, "Mateusz", "Nowak"))
+           .event(new CourseCreated(Ids.FACULTY_ID, courseId.raw(), "Axon Framework 5: Getting Started", 2))
+           .event(new StudentEnrolledInFaculty(Ids.FACULTY_ID, studentId, "Mateusz", "Nowak"))
            .when()
            .command(new SubscribeStudentToCourse(studentId, courseId))
            .then()
-           .events(new StudentSubscribedToCourse(studentId, courseId));
+           .events(new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId));
 }
 ```

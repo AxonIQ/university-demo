@@ -1,6 +1,6 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
-import org.axonframework.queryhandling.annotations.QueryHandler;
+import org.axonframework.messaging.queryhandling.annotation.QueryHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

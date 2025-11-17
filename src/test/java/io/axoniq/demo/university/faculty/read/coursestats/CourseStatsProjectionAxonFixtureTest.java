@@ -1,10 +1,11 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.faculty.FacultyAxonTestFixture;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
-import org.axonframework.configuration.Configuration;
+import org.axonframework.common.configuration.Configuration;
 import org.axonframework.test.fixture.AxonTestFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,7 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", 42))
+                .events(new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }
@@ -66,7 +67,9 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, originalName, 42), new CourseRenamed(courseId, newName))
+                .events(
+                  new CourseCreated(Ids.FACULTY_ID, courseId, originalName, 42),
+                  new CourseRenamed(Ids.FACULTY_ID, courseId, newName))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }
@@ -85,7 +88,9 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", originalCapacity), new CourseCapacityChanged(courseId, newCapacity))
+                .events(
+                  new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", originalCapacity),
+                  new CourseCapacityChanged(Ids.FACULTY_ID, courseId, newCapacity))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }
@@ -103,7 +108,9 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", 42), new StudentSubscribedToCourse(studentId, courseId))
+                .events(
+                  new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42),
+                  new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }
@@ -121,9 +128,9 @@ public class CourseStatsProjectionAxonFixtureTest {
         );
 
         fixture.given()
-                .events(new CourseCreated(courseId, "Event Sourcing in Practice", 42),
-                        new StudentSubscribedToCourse(studentId, courseId),
-                        new StudentUnsubscribedFromCourse(studentId, courseId))
+                .events(new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42),
+                        new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId),
+                        new StudentUnsubscribedFromCourse(Ids.FACULTY_ID, studentId, courseId))
                 .then()
                 .await(r -> r.expect(cfg -> assertReadModel(cfg, expectedReadModel)));
     }

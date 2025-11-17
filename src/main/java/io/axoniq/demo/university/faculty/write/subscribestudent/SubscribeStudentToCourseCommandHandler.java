@@ -1,18 +1,19 @@
 package io.axoniq.demo.university.faculty.write.subscribestudent;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
-import org.axonframework.commandhandling.annotations.CommandHandler;
-import org.axonframework.eventhandling.gateway.EventAppender;
-import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
-import org.axonframework.eventsourcing.annotations.EventCriteriaBuilder;
-import org.axonframework.eventsourcing.annotations.EventSourcedEntity;
-import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
-import org.axonframework.eventstreaming.EventCriteria;
-import org.axonframework.eventstreaming.Tag;
-import org.axonframework.modelling.annotations.InjectEntity;
+import org.axonframework.messaging.commandhandling.annotation.CommandHandler;
+import org.axonframework.messaging.eventhandling.gateway.EventAppender;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
+import org.axonframework.eventsourcing.annotation.EventCriteriaBuilder;
+import org.axonframework.eventsourcing.annotation.EventSourcedEntity;
+import org.axonframework.eventsourcing.annotation.reflection.EntityCreator;
+import org.axonframework.messaging.eventstreaming.EventCriteria;
+import org.axonframework.messaging.eventstreaming.Tag;
+import org.axonframework.modelling.annotation.InjectEntity;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ class SubscribeStudentToCourseCommandHandler {
         assertEnoughVacantSpotsInCourse(state);
         assertStudentNotAlreadySubscribed(state);
 
-        return List.of(new StudentSubscribedToCourse(command.studentId(), command.courseId()));
+        return List.of(new StudentSubscribedToCourse(Ids.FACULTY_ID, command.studentId(), command.courseId()));
     }
 
     private void assertStudentEnrolledFaculty(State state) {

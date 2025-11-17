@@ -1,7 +1,7 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.shared.ids.CourseId;
-import org.axonframework.queryhandling.gateway.QueryGateway;
+import org.axonframework.messaging.queryhandling.gateway.QueryGateway;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;

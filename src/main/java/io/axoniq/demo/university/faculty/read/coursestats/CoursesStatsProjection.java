@@ -1,10 +1,10 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.faculty.events.*;
-import org.axonframework.eventhandling.annotations.EventHandler;
-import org.axonframework.eventhandling.annotations.SequencingPolicy;
-import org.axonframework.eventhandling.sequencing.PropertySequencingPolicy;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.axonframework.messaging.eventhandling.annotation.EventHandler;
+import org.axonframework.messaging.eventhandling.annotation.SequencingPolicy;
+import org.axonframework.messaging.eventhandling.sequencing.PropertySequencingPolicy;
+import org.axonframework.messaging.queryhandling.QueryUpdateEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

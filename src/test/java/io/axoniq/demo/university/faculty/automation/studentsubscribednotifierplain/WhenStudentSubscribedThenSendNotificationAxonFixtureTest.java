@@ -1,13 +1,14 @@
 package io.axoniq.demo.university.faculty.automation.studentsubscribednotifierplain;
 
 import io.axoniq.demo.university.faculty.FacultyAxonTestFixture;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.shared.configuration.NotificationServiceConfiguration;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import io.axoniq.demo.university.shared.infrastructure.notifier.RecordingNotificationService;
-import org.axonframework.configuration.Configuration;
+import org.axonframework.common.configuration.Configuration;
 import org.axonframework.test.fixture.AxonTestFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ public class WhenStudentSubscribedThenSendNotificationAxonFixtureTest {
         var expectedNotification = new NotificationService.Notification(studentId.raw(), "You have subscribed to course " + courseId);
 
         fixture.given()
-                .events(new StudentSubscribedToCourse(studentId, courseId))
+                .events(new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId))
                 .then()
                 .await(r -> r.expect(cfg -> assertNotificationSent(cfg, expectedNotification)));
     }

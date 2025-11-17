@@ -1,20 +1,21 @@
 package io.axoniq.demo.university.faculty.automation.allcoursesfullybookednotifier;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
-import org.axonframework.commandhandling.annotations.CommandHandler;
-import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.eventhandling.annotations.EventHandler;
-import org.axonframework.eventhandling.gateway.EventAppender;
-import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
-import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
-import org.axonframework.messaging.Message;
-import org.axonframework.messaging.MessageStream;
-import org.axonframework.messaging.unitofwork.ProcessingContext;
+import org.axonframework.messaging.commandhandling.annotation.CommandHandler;
+import org.axonframework.messaging.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.eventhandling.annotation.EventHandler;
+import org.axonframework.messaging.eventhandling.gateway.EventAppender;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
+import org.axonframework.eventsourcing.annotation.reflection.EntityCreator;
+import org.axonframework.messaging.core.Message;
+import org.axonframework.messaging.core.MessageStream;
+import org.axonframework.messaging.core.unitofwork.ProcessingContext;
 import org.axonframework.modelling.StateManager;
-import org.axonframework.modelling.annotations.InjectEntity;
+import org.axonframework.modelling.annotation.InjectEntity;
 import org.springframework.stereotype.Component;
 import org.axonframework.extension.spring.stereotype.EventSourced;
 
@@ -140,7 +141,7 @@ public class WhenAllCoursesFullyBookedThenSendNotification {
             var shouldNotify = allCoursesFullyBooked && !automationState.notified();
             if (shouldNotify) {
                 var commandGateway = context.component(CommandGateway.class);
-                commandGateway.send(new SendAllCoursesFullyBookedNotification(FACULTY_ID), context);
+                commandGateway.send(new SendAllCoursesFullyBookedNotification(Ids.FACULTY_ID), context);
             }
             return MessageStream.empty();
         }

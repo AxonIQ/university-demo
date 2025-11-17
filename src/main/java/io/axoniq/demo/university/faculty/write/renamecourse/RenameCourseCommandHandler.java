@@ -1,15 +1,16 @@
 package io.axoniq.demo.university.faculty.write.renamecourse;
 
 import io.axoniq.demo.university.faculty.FacultyTags;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.CourseCreated;
 import io.axoniq.demo.university.faculty.events.CourseRenamed;
 import io.axoniq.demo.university.shared.ids.CourseId;
-import org.axonframework.commandhandling.annotations.CommandHandler;
-import org.axonframework.eventhandling.gateway.EventAppender;
-import org.axonframework.eventsourcing.annotations.EventSourcingHandler;
-import org.axonframework.eventsourcing.annotations.reflection.EntityCreator;
+import org.axonframework.messaging.commandhandling.annotation.CommandHandler;
+import org.axonframework.messaging.eventhandling.gateway.EventAppender;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
+import org.axonframework.eventsourcing.annotation.reflection.EntityCreator;
 import org.axonframework.extension.spring.stereotype.EventSourced;
-import org.axonframework.modelling.annotations.InjectEntity;
+import org.axonframework.modelling.annotation.InjectEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,7 +35,7 @@ class RenameCourseCommandHandler {
     if (command.name().equals(state.name)) {
       return List.of();
     }
-    return List.of(new CourseRenamed(command.courseId(), command.name()));
+    return List.of(new CourseRenamed(Ids.FACULTY_ID, command.courseId(), command.name()));
   }
 
   @EventSourced(idType = CourseId.class, tagKey = FacultyTags.COURSE_ID)

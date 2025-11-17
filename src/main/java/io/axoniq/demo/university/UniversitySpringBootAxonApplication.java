@@ -9,12 +9,12 @@ import io.axoniq.demo.university.shared.application.notifier.NotificationService
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import io.axoniq.demo.university.shared.infrastructure.notifier.LoggingNotificationService;
-import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.configuration.ComponentRegistry;
-import org.axonframework.eventhandling.processors.streaming.token.store.TokenStore;
-import org.axonframework.eventhandling.processors.streaming.token.store.inmemory.InMemoryTokenStore;
+import org.axonframework.common.configuration.ComponentRegistry;
 import org.axonframework.extension.spring.config.SpringComponentRegistry;
-import org.axonframework.queryhandling.gateway.QueryGateway;
+import org.axonframework.messaging.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.eventhandling.processing.streaming.token.store.TokenStore;
+import org.axonframework.messaging.eventhandling.processing.streaming.token.store.inmemory.InMemoryTokenStore;
+import org.axonframework.messaging.queryhandling.gateway.QueryGateway;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.slf4j.Logger;

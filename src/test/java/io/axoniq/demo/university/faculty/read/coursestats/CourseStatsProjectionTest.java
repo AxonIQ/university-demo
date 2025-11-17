@@ -1,12 +1,13 @@
 package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.UniversityApplicationTest;
+import io.axoniq.demo.university.faculty.Ids;
 import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.awaitility.Awaitility;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
-import org.axonframework.queryhandling.gateway.QueryGateway;
+import org.axonframework.messaging.queryhandling.gateway.QueryGateway;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,7 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
     // given
     var courseId = CourseId.random();
     eventOccurred(
-      new CourseCreated(courseId, "Event Sourcing in Practice", 42)
+      new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42)
     );
 
     // when & then
@@ -57,8 +58,8 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
     var originalName = "Event Sourcing in Practice";
     var newName = "Advanced Event Sourcing";
 
-    eventOccurred(new CourseCreated(courseId, originalName, 42));
-    eventOccurred(new CourseRenamed(courseId, newName));
+    eventOccurred(new CourseCreated(Ids.FACULTY_ID, courseId, originalName, 42));
+    eventOccurred(new CourseRenamed(Ids.FACULTY_ID, courseId, newName));
 
     // when & then
     CoursesStatsReadModel expectedReadModel = new CoursesStatsReadModel(
@@ -77,8 +78,8 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
     var originalCapacity = 42;
     var newCapacity = 100;
 
-    eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", originalCapacity));
-    eventOccurred(new CourseCapacityChanged(courseId, newCapacity));
+    eventOccurred(new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", originalCapacity));
+    eventOccurred(new CourseCapacityChanged(Ids.FACULTY_ID, courseId, newCapacity));
 
     // when & then
     CoursesStatsReadModel expectedReadModel = new CoursesStatsReadModel(
@@ -96,8 +97,8 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
     var courseId = CourseId.random();
     var studentId = StudentId.random();
 
-    eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", 42));
-    eventOccurred(new StudentSubscribedToCourse(studentId, courseId));
+    eventOccurred(new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42));
+    eventOccurred(new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId));
 
     // when & then
     CoursesStatsReadModel expectedReadModel = new CoursesStatsReadModel(
@@ -115,9 +116,9 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
     var courseId = CourseId.random();
     var studentId = StudentId.random();
 
-    eventOccurred(new CourseCreated(courseId, "Event Sourcing in Practice", 42));
-    eventOccurred(new StudentSubscribedToCourse(studentId, courseId));
-    eventOccurred(new StudentUnsubscribedFromCourse(studentId, courseId));
+    eventOccurred(new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42));
+    eventOccurred(new StudentSubscribedToCourse(Ids.FACULTY_ID, studentId, courseId));
+    eventOccurred(new StudentUnsubscribedFromCourse(Ids.FACULTY_ID, studentId, courseId));
 
     // when & then
     CoursesStatsReadModel expectedReadModel = new CoursesStatsReadModel(

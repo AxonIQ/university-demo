@@ -2,8 +2,8 @@ package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
-import org.axonframework.eventhandling.annotations.EventHandler;
-import org.axonframework.messaging.MessageStream;
+import org.axonframework.messaging.eventhandling.annotation.EventHandler;
+import org.axonframework.messaging.core.MessageStream;
 import org.springframework.stereotype.Component;
 
 /**

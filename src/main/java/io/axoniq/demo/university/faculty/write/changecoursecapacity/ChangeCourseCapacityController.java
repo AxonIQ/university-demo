@@ -1,8 +1,7 @@
 package io.axoniq.demo.university.faculty.write.changecoursecapacity;
 
-import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
-import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.commandhandling.gateway.CommandGateway;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

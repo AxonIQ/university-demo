@@ -1,18 +1,18 @@
 package io.axoniq.demo.university;
 
 import io.axoniq.demo.university.faculty.FacultyModuleConfiguration;
+import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
 import io.axoniq.demo.university.faculty.write.enrollstudent.EnrollStudentInFaculty;
+import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
 import io.axoniq.demo.university.faculty.write.subscribestudent.SubscribeStudentToCourse;
 import io.axoniq.demo.university.shared.ids.CourseId;
-import io.axoniq.demo.university.faculty.write.createcourseplain.CreateCourse;
-import io.axoniq.demo.university.faculty.write.renamecourse.RenameCourse;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.axonframework.axonserver.connector.AxonServerConfiguration;
 import org.axonframework.axonserver.connector.AxonServerConfigurationEnhancer;
 import org.axonframework.common.configuration.AxonConfiguration;
-import org.axonframework.messaging.commandhandling.gateway.CommandGateway;
 import org.axonframework.common.infra.FilesystemStyleComponentDescriptor;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.messaging.commandhandling.gateway.CommandGateway;
 
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class UniversityAxonApplication {
 
     private static final String CONTEXT = "default";
+    private static final String APP_NAME = "university-demo";
     private static final Logger logger = Logger.getLogger(UniversityAxonApplication.class.getName());
 
     public static void main(String[] args) {
@@ -60,6 +61,7 @@ public class UniversityAxonApplication {
             configurer.componentRegistry(r -> r.registerComponent(AxonServerConfiguration.class, c -> {
                 var axonServerConfig = new AxonServerConfiguration();
                 axonServerConfig.setContext(CONTEXT);
+                axonServerConfig.setComponentName(APP_NAME);
                 return axonServerConfig;
             }));
         } else {

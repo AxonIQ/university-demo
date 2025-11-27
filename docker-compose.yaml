@@ -1,5 +1,6 @@
 services:
   axon-server:
+    container_name: university-demo-axonserver
     image: axoniq/axonserver:2025.2.0
     hostname: axon-server
     ports:

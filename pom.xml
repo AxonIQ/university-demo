@@ -14,7 +14,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <axon.version>5.0.1-SNAPSHOT</axon.version>
+        <axon.version>5.0.1</axon.version>
         <springboot.version>4.0.0</springboot.version>
 
         <assertj.version>3.27.3</assertj.version>
@@ -81,16 +81,19 @@
             <artifactId>axon-server-connector</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
-
         <!-- Spring Boot Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
         </dependency>
 
 

@@ -3,6 +3,7 @@ package io.axoniq.demo.university.faculty.read.coursestats;
 import io.axoniq.demo.university.faculty.events.*;
 import org.axonframework.messaging.eventhandling.annotation.EventHandler;
 import org.axonframework.messaging.eventhandling.annotation.SequencingPolicy;
+import org.axonframework.messaging.eventhandling.replay.annotation.ResetHandler;
 import org.axonframework.messaging.eventhandling.sequencing.PropertySequencingPolicy;
 
 @SequencingPolicy(type = PropertySequencingPolicy.class, parameters = {"courseId"})
@@ -51,6 +52,11 @@ class CoursesStatsProjection {
         CoursesStatsReadModel readModel = repository.findByIdOrThrow(event.courseId());
         var updatedReadModel = readModel.subscribedStudents(readModel.subscribedStudents() - 1);
         repository.save(updatedReadModel);
+    }
+
+    @ResetHandler
+    void handleReset() {
+        repository.deleteAll();
     }
 
 }

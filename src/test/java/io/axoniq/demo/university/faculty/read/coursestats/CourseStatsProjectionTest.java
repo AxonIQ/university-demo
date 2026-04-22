@@ -6,11 +6,14 @@ import io.axoniq.demo.university.faculty.events.*;
 import io.axoniq.demo.university.shared.ids.CourseId;
 import io.axoniq.demo.university.shared.ids.StudentId;
 import org.awaitility.Awaitility;
+import org.axonframework.common.FutureUtils;
 import org.axonframework.eventsourcing.configuration.EventSourcingConfigurer;
+import org.axonframework.messaging.eventhandling.processing.streaming.pooled.PooledStreamingEventProcessor;
 import org.axonframework.messaging.queryhandling.gateway.QueryGateway;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.axonframework.common.FutureUtils.joinAndUnwrap;
 
 public class CourseStatsProjectionTest extends UniversityApplicationTest {
 
@@ -47,6 +50,31 @@ public class CourseStatsProjectionTest extends UniversityApplicationTest {
                 0
         );
         assertReadModel(expectedReadModel);
+    }
+
+    @Test
+    void givenCourseCreatedAndProjectionReset_WhenGetById_ThenNotFound() {
+        // given
+        var courseId = CourseId.random();
+        eventOccurred(
+                new CourseCreated(Ids.FACULTY_ID, courseId, "Event Sourcing in Practice", 42)
+        );
+        CoursesStatsReadModel expectedReadModel = new CoursesStatsReadModel(
+                courseId,
+                "Event Sourcing in Practice",
+                42,
+                0
+        );
+        assertReadModel(expectedReadModel);
+        var processor = configuration.getComponents(PooledStreamingEventProcessor.class).get("Projection_CourseStats_Processor");
+        joinAndUnwrap(processor.shutdown());
+        joinAndUnwrap(processor.resetTokens());
+
+        // when
+        var found = courseStatsRepository().findById(courseId);
+
+        // then
+        assertThat(found).isEmpty();
     }
 
     @Test

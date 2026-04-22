@@ -13,4 +13,6 @@ public interface CourseStatsRepository {
         return findById(courseId).orElseThrow(() -> new RuntimeException("Course with id " + courseId + " does not exist!"));
     }
 
+    void deleteAll();
+
 }

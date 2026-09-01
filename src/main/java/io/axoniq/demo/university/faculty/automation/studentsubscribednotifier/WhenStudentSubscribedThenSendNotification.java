@@ -3,6 +3,7 @@ package io.axoniq.demo.university.faculty.automation.studentsubscribednotifier;
 import io.axoniq.demo.university.faculty.events.StudentSubscribedToCourse;
 import io.axoniq.demo.university.shared.application.notifier.NotificationService;
 import org.axonframework.messaging.eventhandling.annotation.EventHandler;
+import org.axonframework.messaging.eventhandling.replay.annotation.DisallowReplay;
 
 /**
  * Automation that reacts on {@link StudentSubscribedToCourse} events and sends a notification.
@@ -16,6 +17,7 @@ public class WhenStudentSubscribedThenSendNotification {
         this.notificationService = notificationService;
     }
 
+    @DisallowReplay
     @EventHandler
     void react(StudentSubscribedToCourse event) {
         var notification = new NotificationService.Notification(

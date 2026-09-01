@@ -20,4 +20,8 @@ class InMemoryCourseStatsRepository implements CourseStatsRepository {
         return Optional.ofNullable(stats.get(courseId));
     }
 
+    @Override
+    public void deleteAll() {
+        stats.clear();
+    }
 }

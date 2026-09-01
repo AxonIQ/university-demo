@@ -23,4 +23,8 @@ public class RecordingNotificationService implements NotificationService {
     public List<Notification> sent() {
         return List.copyOf(recorded);
     }
+
+    public void clear() {
+        recorded.clear();
+    }
 }

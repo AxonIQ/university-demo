@@ -12,7 +12,7 @@ public class EnrollStudentInFacultyConfiguration {
                 .registerEntity(EventSourcedEntityModule.autodetected(StudentId.class, EnrollStudentInFacultyCommandHandler.Student.class))
                 .registerCommandHandlingModule(CommandHandlingModule.named("EnrollStudentInFaculty")
                         .commandHandlers()
-                        .annotatedCommandHandlingComponent(c -> new EnrollStudentInFacultyCommandHandler())
+                        .autodetectedCommandHandlingComponent(c -> new EnrollStudentInFacultyCommandHandler())
                 );
     }
 }

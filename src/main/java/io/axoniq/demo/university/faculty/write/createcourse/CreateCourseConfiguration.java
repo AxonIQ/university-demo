@@ -15,7 +15,7 @@ public class CreateCourseConfiguration {
         var commandHandlingModule = CommandHandlingModule
                 .named("CreateCourse")
                 .commandHandlers()
-                .annotatedCommandHandlingComponent(c -> new CreateCourseCommandHandler());
+                .autodetectedCommandHandlingComponent(c -> new CreateCourseCommandHandler());
 
         var courseNameUniqueNameSetValidation = EventProcessorModule
                 .subscribing("CourseNameUniqueNameSetValidation")

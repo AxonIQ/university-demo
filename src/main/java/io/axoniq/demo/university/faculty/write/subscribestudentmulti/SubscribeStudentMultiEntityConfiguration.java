@@ -17,7 +17,7 @@ public class SubscribeStudentMultiEntityConfiguration {
         var commandHandlingModule = CommandHandlingModule
                 .named("SubscribeStudentMulti")
                 .commandHandlers()
-                .annotatedCommandHandlingComponent(c -> new SubscribeStudentToCourseCommandHandler());
+                .autodetectedCommandHandlingComponent(c -> new SubscribeStudentToCourseCommandHandler());
 
         return configurer
                 .registerEntity(courseEntity)

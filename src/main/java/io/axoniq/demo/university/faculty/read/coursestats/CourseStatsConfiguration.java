@@ -16,7 +16,7 @@ public class CourseStatsConfiguration {
 
         QueryHandlingModule getCourseStatsByIdQueryHandler = QueryHandlingModule.named("get-course-stats-by-id")
                 .queryHandlers()
-                .annotatedQueryHandlingComponent(cfg -> new GetCourseStatsByIdQueryHandler(cfg.getComponent(CourseStatsRepository.class)))
+                .autodetectedQueryHandlingComponent(cfg -> new GetCourseStatsByIdQueryHandler(cfg.getComponent(CourseStatsRepository.class)))
                 .build();
 
         return configurer

@@ -2,8 +2,8 @@ package io.axoniq.demo.university.faculty.read.coursestats;
 
 import io.axoniq.demo.university.faculty.events.*;
 import org.axonframework.messaging.eventhandling.annotation.EventHandler;
-import org.axonframework.messaging.eventhandling.annotation.SequencingPolicy;
-import org.axonframework.messaging.eventhandling.sequencing.PropertySequencingPolicy;
+import org.axonframework.messaging.core.annotation.SequencingPolicy;
+import org.axonframework.messaging.core.sequencing.PropertySequencingPolicy;
 
 @SequencingPolicy(type = PropertySequencingPolicy.class, parameters = {"courseId"})
 class CoursesStatsProjection {

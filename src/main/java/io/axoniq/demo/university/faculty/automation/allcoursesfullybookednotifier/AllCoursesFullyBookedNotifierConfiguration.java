@@ -27,7 +27,7 @@ public class AllCoursesFullyBookedNotifierConfiguration {
 
         var commandHandlingModule = CommandHandlingModule.named("SendAllCoursesFullyBookedCommandHandler")
                 .commandHandlers()
-                .annotatedCommandHandlingComponent(cfg -> new WhenAllCoursesFullyBookedThenSendNotification.AutomationCommandHandler())
+                .autodetectedCommandHandlingComponent(cfg -> new WhenAllCoursesFullyBookedThenSendNotification.AutomationCommandHandler())
                 .build();
 
         return configurer

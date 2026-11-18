@@ -14,7 +14,7 @@ public class RenameCourseConfiguration {
         var commandHandlingModule = CommandHandlingModule
                 .named("RenameCourse")
                 .commandHandlers()
-                .annotatedCommandHandlingComponent(c -> new RenameCourseCommandHandler());
+                .autodetectedCommandHandlingComponent(c -> new RenameCourseCommandHandler());
         return configurer
                 .registerEntity(stateEntity)
                 .registerCommandHandlingModule(commandHandlingModule);

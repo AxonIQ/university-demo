@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> ## 📦 This repository is archived
+>
+> The University Demo has moved into **Axon Framework** and is no longer maintained here.
+> Please use the new location for the latest releases, issues and pull requests:
+>
+> - 💻 **Source code:** [`university-demo` module in Axon Framework](https://github.com/AxonIQ/AxonFramework/tree/main/examples/university-demo)
+> - 📚 **Documentation:** - can be found [here](https://docs.axoniq.io/axon-framework-5-getting-started/latest/)
+
 # Axon Framework 5 - Getting Started Sample Application
 Axon version: `5.0.0-RC3`
 
